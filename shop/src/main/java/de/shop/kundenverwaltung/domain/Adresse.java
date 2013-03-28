@@ -1,10 +1,11 @@
 package de.shop.kundenverwaltung.domain;
 
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -13,26 +14,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jboss.logging.Logger;
 
 import de.shop.util.IdGroup;
 
 
 @Entity
-@Table(name = "adresse")
 public class Adresse implements Serializable {
 	private static final long serialVersionUID = -65923191807484046L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
 	public static final int HAUSNR_LENGTH_MAX = 4;
 	public static final int ORT_LENGTH_MIN = 2;
@@ -45,27 +47,24 @@ public class Adresse implements Serializable {
 	@GeneratedValue
 	@Column(name = "a_id", unique = true, nullable = false, updatable = false)
 	@Min(value = MIN_ID, message = "{kundenverwaltung.adresse.id.min}", groups = IdGroup.class)
-	@XmlAttribute
 	private Long id = KEINE_ID;
 		
 	@Column(length = PLZ_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{kundenverwaltung.adresse.plz.notNull}")
 	@Pattern(regexp = "\\d{5}", message = "{kundenverwaltung.adresse.plz}")
 	@Digits(integer = 5, fraction = 0) //bis zu 5 Ziffern
-	@XmlElement(required = true)
 	private String plz;
 	
 	@Column(length = ORT_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{kundenverwaltung.adresse.ort.notNull}")
 	@Size(min = ORT_LENGTH_MIN, max = ORT_LENGTH_MAX, 
 	message = "{kundenverwaltung.adresse.ort.length}")
-	@XmlElement(required = true)
 	private String ort;
 	
 	@Column(length = STRASSE_LENGTH_MAX)
+	@NotNull(message = "{kundenverwaltung.adresse.strasse.notNull}")
 	@Size(min = STRASSE_LENGTH_MIN, max = STRASSE_LENGTH_MAX, 
 	message = "kundenverwaltung.adresse.strasse.length}")
-	@XmlElement(required = true)
 	private String strasse;
 	
 	@Column(length = HAUSNR_LENGTH_MAX)
@@ -74,29 +73,45 @@ public class Adresse implements Serializable {
 	
 	@OneToOne
 	@JoinColumn(name = "kunde_fk", nullable = false)
-	@NotNull(message = "{kundenverwaltung.adresse.kunde.notNull}")
-	@XmlTransient
+	@JsonIgnore
 	private Kunde kunde;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
-	@XmlTransient
+	@Temporal(TIMESTAMP)
+	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
-	@XmlTransient
+	@Temporal(TIMESTAMP)
+	@JsonIgnore
 	private Date aktualisiert;
+	
+	public Adresse() {
+		super();
+	}
+
+	public Adresse(String plz, String ort, String strasse, String hausnr) {
+		super();
+		this.plz = plz;
+		this.ort = ort;
+		this.strasse = strasse;
+		this.hausnr = hausnr;
+	}
 	
 	@PrePersist
 	private void prePersist() {
-		this.erzeugt = new Date();
-		this.aktualisiert = new Date();
+		erzeugt = new Date();
+		aktualisiert = new Date();
 	}
 	
 	@PreUpdate
 	private void preUpdate() {
-		this.aktualisiert = new Date();
+		aktualisiert = new Date();
+	}
+	
+	@PostPersist
+	private void postPersist() {
+		LOGGER.debugf("Neue Adresse mit ID=%s", id);
 	}
 
 	public Long getId() {
@@ -148,7 +163,7 @@ public class Adresse implements Serializable {
 	}
 
 	public Date getErzeugt() {
-		return erzeugt == null ? null : (Date) this.erzeugt.clone();
+		return erzeugt == null ? null : (Date) erzeugt.clone();
 	}
 
 	public void setErzeugt(Date erzeugt) {
@@ -156,7 +171,7 @@ public class Adresse implements Serializable {
 	}
 
 	public Date getAktualisiert() {
-		return aktualisiert == null ? null : (Date) this.aktualisiert.clone();
+		return aktualisiert == null ? null : (Date) aktualisiert.clone();
 	}
 
 	public void setAktualisiert(Date aktualisiert) {
