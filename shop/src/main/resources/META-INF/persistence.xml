@@ -9,7 +9,7 @@
 	    <!-- in SWA:
 		<jta-data-source>java:jboss/datasources/ShopDS</jta-data-source>
 		-->
-	    <jta-data-source>java:jboss/datasources/Shop2DS</jta-data-source>
+	    <jta-data-source>java:jboss/datasources/ShopDS</jta-data-source>
 				
 		<!-- Caching von Objekten mit @Cacheable -->
 		<!--
