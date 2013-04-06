@@ -1,66 +1,94 @@
 package de.shop.bestellverwaltung.domain;
 
+import static de.shop.util.Constants.ERSTE_VERSION;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jboss.logging.Logger;
 
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.util.IdGroup;
 
 
 @Entity
-@XmlRootElement
+@Table(name = "bestellposition")
+@Cacheable
 public class Bestellposition implements Serializable {
 	private static final long serialVersionUID = 1827765860444681634L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
+
 
 	private static final int ANZAHL_MIN = 1;
 	private static final int ANZAHL_DEFAULT = 1;
 
 	@Id
 	@GeneratedValue
-	@Column(name = "bp_id", unique = true, nullable = false, updatable = false)
+	@Column(unique = true, nullable = false, updatable = false)
 	@Min(value = MIN_ID, message = "{bestellverwaltung.bestellposition.id.min}", groups = IdGroup.class)
-	@XmlAttribute
 	private Long id = KEINE_ID;
+	
+	@Version
+	@Basic(optional = false)
+	private int version = ERSTE_VERSION;
 
+	@Column(nullable = false)
+	@Min(value = ANZAHL_MIN, message = "{bestellverwaltung.bestellposition.anzahl.min}")
+	private short anzahl = ANZAHL_DEFAULT;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "artikel_fk", nullable = false)
 	@NotNull(message = "{bestellverwaltung.bestellposition.artikel.notNull}")
-	@XmlTransient
+	@JsonIgnore
 	private Artikel artikel;
 	
 	@Transient
-	@XmlElement(name = "artikel", required = true)
 	private URI artikelUri;
 	
-	@Column(nullable = false)
-	@Min(value = ANZAHL_MIN, message = "{bestellverwaltung.bestellposition.anzahl.min}")
-	@XmlElement
-	private short anzahl = ANZAHL_DEFAULT;
+	public Bestellposition() {
+		super();
+	}
+	
+	public Bestellposition(Artikel artikel) {
+		super();
+		this.artikel = artikel;
+		this.anzahl = 1;
+	}
 
 	public Bestellposition(Artikel artikel, short anzahl) {
+		super();
 		this.artikel = artikel;
 		this.anzahl = anzahl;
 	}
-
-	public Bestellposition() {
-		super();
+	
+	@PostPersist
+	private void postPersist() {
+		LOGGER.debugf("Neue Bestellposition mit ID=%d", id);
+	}
+	
+	@PostUpdate
+	private void postUpdate() {
+		LOGGER.debugf("Bestellposition mit ID=%s aktualisiert: version=%d", id, version);
 	}
 
 	public Long getId() {
@@ -69,6 +97,22 @@ public class Bestellposition implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	public short getAnzahl() {
+		return this.anzahl;
+	}
+
+	public void setAnzahl(short anzahl) {
+		this.anzahl = anzahl;
 	}
 
 	public Artikel getArtikel() {
@@ -88,26 +132,12 @@ public class Bestellposition implements Serializable {
 		this.artikelUri = artikelUri;
 	}
 
-	public short getAnzahl() {
-		return this.anzahl;
-	}
-
-	public void setAnzahl(short anzahl) {
-		this.anzahl = anzahl;
-	}
-
-	@Override
-	public String toString() {
-		return "Bestellposition [id=" + id
-			   + ", anzahl=" + anzahl + "]";
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + anzahl;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((artikel == null) ? 0 : artikel.hashCode());
 		return result;
 	}
 
@@ -122,17 +152,34 @@ public class Bestellposition implements Serializable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Bestellposition other = (Bestellposition) obj;
-		
-		if (id == null) {
-			if (other.id != null) {
+		final Bestellposition other = (Bestellposition) obj;
+		if (anzahl != other.anzahl) {
+			return false;
+		}
+		if (artikel == null) {
+			if (other.artikel != null) {
 				return false;
 			}
 		}
-		else if (!id.equals(other.id)) {
+		else if (!artikel.equals(other.artikel)) {
 			return false;
 		}
-		
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		if (artikel == null) {
+			return "Bestellposition [id=" + id 
+				   + ", version=" + version
+			       + ", artikelUri=" + artikelUri 
+			       + ", anzahl=" + anzahl + "]";
+		}
+
+		return "Bestellposition [id=" + id 
+				+ ", version=" + version 
+				+ ", artikel.id=" + artikel.getId()
+		        + ", anzahl=" + anzahl + "]";
+	}
+
 }

@@ -120,7 +120,6 @@ public class ArtikelverwaltungResource {
 	
 		origArtikel.setBezeichnung(artikel.getBezeichnung());
 		origArtikel.setPreis(artikel.getPreis());
-		origArtikel.setRabatt(artikel.getRabatt());
 		origArtikel.setVerfuegbar(artikel.isVerfuegbar());
 		
 		LOGGER.log(FINEST, "Artikel nachher: %s", origArtikel);

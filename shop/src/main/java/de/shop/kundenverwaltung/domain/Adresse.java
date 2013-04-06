@@ -1,13 +1,20 @@
 package de.shop.kundenverwaltung.domain;
 
-import static javax.persistence.TemporalType.TIMESTAMP;
+import static javax.persistence.TemporalType.DATE;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
+import static de.shop.util.Constants.ERSTE_VERSION;
+
+
+
+
+
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,14 +22,21 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Version;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+
+
+
 
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -32,6 +46,7 @@ import de.shop.util.IdGroup;
 
 
 @Entity
+@Table(name = "adresse")
 public class Adresse implements Serializable {
 	private static final long serialVersionUID = -65923191807484046L;
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
@@ -45,14 +60,18 @@ public class Adresse implements Serializable {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "a_id", unique = true, nullable = false, updatable = false)
+	@Column(unique = true, nullable = false, updatable = false)
 	@Min(value = MIN_ID, message = "{kundenverwaltung.adresse.id.min}", groups = IdGroup.class)
 	private Long id = KEINE_ID;
+	
+	@Version
+	@Basic(optional = false)
+	private int version = ERSTE_VERSION;
 		
 	@Column(length = PLZ_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{kundenverwaltung.adresse.plz.notNull}")
 	@Pattern(regexp = "\\d{5}", message = "{kundenverwaltung.adresse.plz}")
-	@Digits(integer = 5, fraction = 0) //bis zu 5 Ziffern
+	@Digits(integer = 5, fraction = 0)
 	private String plz;
 	
 	@Column(length = ORT_LENGTH_MAX, nullable = false)
@@ -77,12 +96,12 @@ public class Adresse implements Serializable {
 	private Kunde kunde;
 
 	@Column(nullable = false)
-	@Temporal(TIMESTAMP)
+	@Temporal(DATE)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(TIMESTAMP)
+	@Temporal(DATE)
 	@JsonIgnore
 	private Date aktualisiert;
 	
@@ -114,6 +133,12 @@ public class Adresse implements Serializable {
 		LOGGER.debugf("Neue Adresse mit ID=%s", id);
 	}
 
+	
+	@PostUpdate
+	private void postUpdate() {
+		LOGGER.debugf("Adresse mit ID=%d aktualisiert: version=%d", id, version);
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -180,8 +205,13 @@ public class Adresse implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Adresse [id=" + id + ", plz=" + plz + ", ort=" + ort + ", strasse=" + strasse + ", hausnr=" + hausnr
-		       + ", erzeugt=" + erzeugt + ", aktualisiert=" + aktualisiert + ']';
+		return "Adresse [id=" + id 
+				+ ", plz=" + plz 
+				+ ", ort=" + ort 
+				+ ", strasse=" + strasse 
+				+ ", hausnr=" + hausnr
+		        + ", erzeugt=" + erzeugt 
+		        + ", aktualisiert=" + aktualisiert + ']';
 	}
 
 	@Override

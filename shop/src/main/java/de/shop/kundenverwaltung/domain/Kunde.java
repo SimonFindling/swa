@@ -1,20 +1,23 @@
 package de.shop.kundenverwaltung.domain;
 
-import static javax.persistence.TemporalType.DATE;
+import static de.shop.util.Constants.ERSTE_VERSION;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.TemporalType.DATE;
 
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,28 +29,28 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.ScriptAssert;
-
-
+import org.jboss.logging.Logger;
 
 import de.shop.bestellverwaltung.domain.Bestellung;
+import de.shop.util.File;
 import de.shop.util.IdGroup;
 
 
@@ -94,11 +97,11 @@ import de.shop.util.IdGroup;
 						+ "|| (_this.password != null && _this.password.equals(_this.passwordWdh))",
 						message = "{kundenverwaltung.kunde.password.notEqual}",
 				groups = PasswordGroup.class)
-@XmlRootElement
+@Cacheable
 public class Kunde implements java.io.Serializable {
 	private static final long serialVersionUID = 8926240073895833886L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
-	//UTF-8 Pattern fuer Umlaute
 	private static final String NAME_PATTERN = "[A-Z\u00C4\u00D6\u00DC][a-z\u00E4\u00F6\u00FC\u00DF]+";
 	public static final String NACHNAME_PATTERN = NAME_PATTERN + "(-" + NAME_PATTERN + ")?";
 	public static final int NACHNAME_LENGTH_MIN = 2;
@@ -131,33 +134,30 @@ public class Kunde implements java.io.Serializable {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "k_id", nullable = false, updatable = false, unique = true)
+	@Column(nullable = false, updatable = false, unique = true)
 	@Min(value = MIN_ID, message = "{kundenverwaltung.kunde.id.min}", groups = IdGroup.class)
-	@XmlAttribute
 	private Long id = KEINE_ID;
 
-	@Column(length = NACHNAME_LENGTH_MAX)
+	@Version
+	@Basic(optional = false)
+	private int version = ERSTE_VERSION;
+	
+	@Column(length = NACHNAME_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{kundenverwaltung.kunde.nachname.notNull}")
 	@Size(min = NACHNAME_LENGTH_MIN, max = NACHNAME_LENGTH_MAX, 
 	message = "{kundenverwaltung.kunde.nachname.length}")
 	@Pattern(regexp = NACHNAME_PATTERN, message = "{kundenverwaltung.kunde.nachname.pattern}")
-	@XmlElement(required = true)
 	private String nachname;
 
 	@Column(length = VORNAME_LENGTH_MAX)
 	@Size(max = VORNAME_LENGTH_MAX, message = "{kundenverwaltung.kunde.vorname.length}")
-	@XmlElement(required = true)
 	private String vorname;
 
-	@Temporal(DATE)
-	@Past(message = "{kundenverwaltung.kunde.seit.past}")
-	
-	//TODO JSON RESTFUL Webservice Annotation
-	private Date seit;
+	@Column(name = "familienstand_fk")
+	private FamilienstandType familienstand = FamilienstandType.LEDIG;
 
-	private FamilienstandType familienstand;
-
-	private GeschlechtType geschlecht;
+	@Column(name = "geschlecht_fk")
+	private GeschlechtType geschlecht = GeschlechtType.WEIBLICH;
 
 	private boolean newsletter = false;
 
@@ -174,34 +174,66 @@ public class Kunde implements java.io.Serializable {
 	private String password;
 
 	@Transient
+	@JsonIgnore
 	private String passwordWdh;
+	
+	@Transient
+	@AssertTrue(message = "{kundenverwaltung.kunde.agb}")
+	private boolean agbAkzeptiert;
 	
 	@OneToMany
 	@JoinColumn(name = "kunde_fk", nullable = false)
 	@OrderColumn(name = "idx", nullable = false)
-	@XmlTransient
+	@JsonIgnore
 	private List<Bestellung> bestellungen;
 	
 	@Transient
-	@XmlElement(name = "bestellungen")
 	private URI bestellungenUri;
 
-	@OneToOne(cascade = { PERSIST, REMOVE }, mappedBy = "kunde")
+	@OneToOne(mappedBy = "kunde", cascade = { PERSIST, REMOVE, MERGE })
 	@NotNull(message = "{kundenverwaltung.kunde.adresse.notNull}")
 	@Valid
-	@XmlElement(required = true)
 	private Adresse adresse;
+	
+	@OneToOne(fetch = LAZY, cascade = { PERSIST, REMOVE })
+	@JoinColumn(name = "file_fk")
+	@JsonIgnore
+	private File file;
+	
+	@Transient
+	private URI fileUri;
 
 	@Column(nullable = false)
 	@Temporal(DATE)
-	@XmlTransient
+	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
 	@Temporal(DATE)
-	@XmlTransient
+	@JsonIgnore
 	private Date aktualisiert;
 
+	public Kunde() {
+		super();
+	}
+	
+	public Kunde(String nachname, String vorname, String email) {
+		super();
+		this.nachname = nachname;
+		this.vorname = vorname;
+		this.email = email;
+	}
+	
+	@PostPersist
+	protected void postPersist() {
+		LOGGER.debugf("Neuer Kunde mit ID=%d", id);
+	}
+	
+	@PostUpdate
+	protected void postUpdate() {
+		LOGGER.debugf("Kunde mit ID=%d aktualisiert: version=%d", id, version);
+	}
+	
 	@PrePersist
 	private void prePersist() {
 		erzeugt = new Date();
@@ -219,16 +251,15 @@ public class Kunde implements java.io.Serializable {
 	}
 
 	public void setValues(Kunde k) {
-		nachname = k.nachname;
-		vorname = k.vorname;
 		familienstand = k.familienstand;
 		geschlecht = k.geschlecht;
-		rabatt = k.rabatt;
-		seit = k.seit;
-		newsletter = k.newsletter;
+		version = k.version;
+		nachname = k.nachname;
+		vorname = k.vorname;
 		email = k.email;
 		password = k.password;
 		passwordWdh = k.password;
+		agbAkzeptiert = k.agbAkzeptiert;
 	}
 	
 	public Long getId() {
@@ -237,6 +268,14 @@ public class Kunde implements java.io.Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public int getVersion() {
+		return version;
+	}
+	
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 	public String getNachname() {
@@ -261,35 +300,6 @@ public class Kunde implements java.io.Serializable {
 	public void setBestellungenUri(URI bestellungenUri) {
 		this.bestellungenUri = bestellungenUri;
 	}
-
-	
-	
-	public Date getSeit() {
-		return seit == null ? null : (Date) seit.clone();
-	}
-
-	public void setSeit(Date seit) {
-		this.seit = seit == null ? null : (Date) seit.clone();
-	}
-	
-	public String getSeitAsString(int style, Locale locale) {
-		Date temp = seit;
-		if (temp == null) {
-			temp = new Date();
-		}
-		final DateFormat f = DateFormat.getDateInstance(style, locale);
-		return f.format(temp);
-	}
-		
-	public void setSeit(String seitStr, int style, Locale locale) {
-		final DateFormat f = DateFormat.getDateInstance(style, locale);
-		try {
-			this.seit = f.parse(seitStr);
-		}
-		catch (ParseException e) {
-			throw new RuntimeException("Kein gueltiges Datumsformat fuer: " + seitStr, e);
-		}
-	}	
 
 	public FamilienstandType getFamilienstand() {
 		return familienstand;
@@ -321,6 +331,14 @@ public class Kunde implements java.io.Serializable {
 
 	public void setRabatt(float rabatt) {
 		this.rabatt = rabatt;
+	}
+	
+	public void setAgbAkzeptiert(boolean agbAkzeptiert) {
+		this.agbAkzeptiert = agbAkzeptiert;
+	}
+
+	public boolean isAgbAkzeptiert() {
+		return agbAkzeptiert;
 	}
 
 	public String getEmail() {
@@ -382,6 +400,23 @@ public class Kunde implements java.io.Serializable {
 		bestellungen.add(bestellung);
 		return this;
 	}
+	
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public URI getFileUri() {
+		return fileUri;
+	}
+
+	public void setFileUri(URI fileUri) {
+		this.fileUri = fileUri;
+	}
+
 
 	public Date getErzeugt() {
 		return erzeugt == null ? null : (Date) erzeugt.clone();
@@ -402,10 +437,11 @@ public class Kunde implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "Kunde [id=" + id
-			   + ", nachname=" + nachname + ", vorname=" + vorname
-			   + ", seit=" + getSeitAsString(DateFormat.MEDIUM, Locale.GERMANY)	
+			   + ", nachname=" + nachname 
+			   + ", vorname=" + vorname
 			   + ", email=" + email
-			   + ", password=" + password + ", passwordWdh=" + passwordWdh
+			   + ", password=" + password 
+			   + ", passwordWdh=" + passwordWdh
 			   + ", familienstand=" + familienstand
 			   + ", geschlecht=" + geschlecht 
 			   + ", erzeugt=" + erzeugt
@@ -432,7 +468,6 @@ public class Kunde implements java.io.Serializable {
 			return false;
 		}
 		final Kunde other = (Kunde) obj;
-		
 		if (email == null) {
 			if (other.email != null) {
 				return false;
@@ -441,8 +476,26 @@ public class Kunde implements java.io.Serializable {
 		else if (!email.equals(other.email)) {
 			return false;
 		}
-		
 		return true;
 	}
 	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		final Kunde neuesObjekt = (Kunde) super.clone();
+		neuesObjekt.id = id;
+		neuesObjekt.version = version;
+		neuesObjekt.nachname = nachname;
+		neuesObjekt.vorname = vorname;
+		neuesObjekt.email = email;
+		neuesObjekt.newsletter = newsletter;
+		neuesObjekt.password = password;
+		neuesObjekt.passwordWdh = passwordWdh;
+		neuesObjekt.agbAkzeptiert = agbAkzeptiert;
+		neuesObjekt.adresse = adresse;
+		neuesObjekt.familienstand = familienstand;
+		neuesObjekt.geschlecht = geschlecht;
+		neuesObjekt.erzeugt = erzeugt;
+		neuesObjekt.aktualisiert = aktualisiert;
+		return neuesObjekt;
+	}
 }

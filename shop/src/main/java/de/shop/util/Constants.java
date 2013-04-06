@@ -6,6 +6,7 @@ public final class Constants {
 	public static final long MIN_ID = 1L;
 	public static final int INT_ANZ_ZIFFERN = 11;
 	public static final int LONG_ANZ_ZIFFERN = 20;
+	public static final int ERSTE_VERSION = 0;
 	
 	// JNDI-NAME fuer UserTransaction
 	public static final String TRANSACTION_NAME = "java:jboss/UserTransaction";

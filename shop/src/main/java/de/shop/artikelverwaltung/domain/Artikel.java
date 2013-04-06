@@ -1,29 +1,35 @@
 package de.shop.artikelverwaltung.domain;
 
+import static de.shop.util.Constants.ERSTE_VERSION;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
 import static javax.persistence.TemporalType.DATE;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
+import javax.persistence.Basic;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Version;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.jboss.logging.Logger;
 
 import de.shop.util.IdGroup;
 
@@ -48,13 +54,13 @@ import de.shop.util.IdGroup;
 			+ " WHERE    a.preis < :" + Artikel.PARAM_PREIS
  	        + " ORDER BY a.id ASC")
 })
-@XmlRootElement
+@Cacheable
 public class Artikel implements Serializable {
 	private static final long serialVersionUID = 721876808952334699L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 	
 	private static final int BEZEICHNUNG_LENGTH_MAX = 32;
 	private static final int PREIS_MIN = 0;
-	private static final int RABATT_DEFAULT = 0;
 
 	private static final String PREFIX = "Artikel.";
 	public static final String FIND_VERFUEGBARE_ARTIKEL = PREFIX + "findVerfuegbareArtikel";
@@ -66,37 +72,33 @@ public class Artikel implements Serializable {
 	
 	@Id
 	@GeneratedValue
-	@Column(name = "a_id", unique = true, nullable = false, updatable = false)
+	@Column(unique = true, nullable = false, updatable = false)
 	@Min(value = MIN_ID, message = "{artikelverwaltung.artikel.id.min}", groups = IdGroup.class)
-	@XmlAttribute
 	private Long id = KEINE_ID;
 	
+	@Version
+	@Basic(optional = false)
+	private int version = ERSTE_VERSION;
 	
 	@Column(length = BEZEICHNUNG_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{artikelverwaltung.artikel.bezeichnung.notnull}")
 	@Size(max = BEZEICHNUNG_LENGTH_MAX, message = "{artikelverwaltung.artikel.bezeichnung.length}")
-	@XmlElement(required = true)
 	private String bezeichnung;
 	
 	@Min(value = PREIS_MIN, message = "{artikelverwaltung.artikel.preis.min}")
-	@XmlElement
 	private double preis;
-	
-	@XmlElement
-	private float rabatt = RABATT_DEFAULT;
 
 	@Column(name = "verfuegbar")
-	@XmlElement
 	private boolean verfuegbar;
 	
 	@Column(nullable = false)
 	@Temporal(DATE)
-	@XmlTransient
+	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
 	@Temporal(DATE)
-	@XmlTransient
+	@JsonIgnore
 	private Date aktualisiert;
 	
 	public Artikel() {
@@ -109,6 +111,15 @@ public class Artikel implements Serializable {
 		this.preis = preis;
 	}
 
+	@PostPersist
+	private void postPersist() {
+		LOGGER.debugf("Neuer Artikel mit ID=%d", id);
+	}
+	
+	@PostUpdate
+	private void postUpdate() {
+		LOGGER.debugf("Artikel mit ID=%s aktualisiert: version=%d", id, version);
+	}
 	
 	@PrePersist
 	private void prePersist() {
@@ -130,6 +141,14 @@ public class Artikel implements Serializable {
 		this.id = id;
 	}
 
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
+	
 	public String getBezeichnung() {
 		return bezeichnung;
 	}
@@ -146,13 +165,6 @@ public class Artikel implements Serializable {
 		return preis;
 	}
 
-	public float getRabatt() {
-		return rabatt;
-	}
-
-	public void setRabatt(float rabatt) {
-		this.rabatt = rabatt;
-	}
 
 	public boolean isVerfuegbar() {
 		return verfuegbar;
@@ -226,8 +238,11 @@ public class Artikel implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Artikel [id=" + id + ", bezeichnung=" + bezeichnung
-		       + ", preis=" + preis + ", verf\u00FCgbar=" + verfuegbar
+		return "Artikel [id=" + id 
+			   + ", version=" + version 
+			   + ", bezeichnung=" + bezeichnung
+		       + ", preis=" + preis 
+		       + ", verfuegbar=" + verfuegbar
 		       + ", erzeugt=" + erzeugt
 			   + ", aktualisiert=" + aktualisiert + "]";
 	}
