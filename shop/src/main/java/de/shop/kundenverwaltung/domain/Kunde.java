@@ -6,6 +6,7 @@ import static de.shop.util.Constants.MIN_ID;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
+import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.TemporalType.DATE;
 
@@ -15,10 +16,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,6 +40,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -49,6 +54,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.ScriptAssert;
 import org.jboss.logging.Logger;
 
+import de.shop.auth.service.jboss.AuthService.RolleType;
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.util.File;
 import de.shop.util.IdGroup;
@@ -67,11 +73,21 @@ import de.shop.util.IdGroup;
 		        query = "SELECT   k"
 				+ " FROM  Kunde k"
 		        + " ORDER BY k.id"),
+    @NamedQuery(name  = Kunde.FIND_IDS_BY_PREFIX,
+	            query = "SELECT   k.id"
+				+ " FROM  Kunde k"
+				+ " WHERE CONCAT('', k.id) LIKE :" + Kunde.PARAM_KUNDE_ID_PREFIX
+				+ " ORDER BY k.id"),
+	@NamedQuery(name  = Kunde.FIND_KUNDEN_BY_ID_PREFIX,
+		        query = "SELECT   k"
+		        + " FROM  Kunde k"
+		        + " WHERE CONCAT('', k.id) LIKE :" + Kunde.PARAM_KUNDE_ID_PREFIX
+		        + " ORDER BY k.id"),
 	@NamedQuery(name  = Kunde.FIND_KUNDE_BY_EMAIL,
    				query = "SELECT DISTINCT k"
    				+ " FROM   Kunde k"
    				+ " WHERE  k.email = :" + Kunde.PARAM_KUNDE_EMAIL),
-   @NamedQuery(name  = Kunde.FIND_KUNDEN_BY_NACHNAME,
+    @NamedQuery(name  = Kunde.FIND_KUNDEN_BY_NACHNAME,
 	            query = "SELECT k"
 	            + " FROM   Kunde k"
 	            + " WHERE  UPPER(k.nachname) = UPPER(:" + Kunde.PARAM_KUNDE_NACHNAME + ")"),
@@ -79,6 +95,15 @@ import de.shop.util.IdGroup;
 	            query = "SELECT DISTINCT k"
 			    + " FROM   Kunde k LEFT JOIN FETCH k.bestellungen"
 			    + " WHERE  k.id = :" + Kunde.PARAM_KUNDE_ID),
+	@NamedQuery(name  = Kunde.FIND_NACHNAMEN_BY_PREFIX,
+   	            query = "SELECT   DISTINCT k.nachname"
+				+ " FROM  Kunde k "
+   	            + " WHERE UPPER(k.nachname) LIKE UPPER(:"
+   	            + Kunde.PARAM_KUNDE_NACHNAME_PREFIX + ")"),
+    @NamedQuery(name  = Kunde.FIND_ALL_NACHNAMEN,
+   	            query = "SELECT      DISTINCT k.nachname"
+   				+ " FROM     Kunde k"
+   				+ " ORDER BY k.nachname"),
 	@NamedQuery(name  = Kunde.FIND_KUNDEN_BY_PLZ,
 	            query = "SELECT k"
 				+ " FROM  Kunde k"
@@ -91,6 +116,14 @@ import de.shop.util.IdGroup;
 				query = "SELECT k"
 				+ " FROM Kunde k JOIN FETCH k.bestellungen b"
 				+ " WHERE b.id = :" + Kunde.PARAM_KUNDE_BESTELLUNG_ID),
+	@NamedQuery(name  = Kunde.FIND_KUNDE_BY_USERNAME,
+	            query = "SELECT   k"
+				+ " FROM  Kunde k"
+	            + " WHERE CONCAT('', k.id) = :" + Kunde.PARAM_KUNDE_USERNAME),
+	@NamedQuery(name  = Kunde.FIND_USERNAME_BY_USERNAME_PREFIX,
+  	            query = "SELECT   CONCAT('', k.id)"
+  				+ " FROM  Kunde k"
+   	            + " WHERE CONCAT('', k.id) LIKE :" + Kunde.PARAM_USERNAME_PREFIX),
 })
 @ScriptAssert(lang = "javascript",
 				script = "(_this.password == null && _this.passwordWdh == null)"
@@ -116,6 +149,8 @@ public class Kunde implements java.io.Serializable {
 	public static final String FIND_KUNDEN = PREFIX + "findKunden";
 	public static final String FIND_KUNDEN_FETCH_BESTELLUNGEN = PREFIX
 													+ "findKundenFetchBestellungen";
+	public static final String FIND_IDS_BY_PREFIX = PREFIX + "findIdsByIdPrefix";
+	public static final String FIND_KUNDEN_BY_ID_PREFIX = PREFIX + "findKundenByIdPrefix";
 	public static final String FIND_KUNDE_BY_EMAIL = PREFIX + "findKundeByEmail";
 	public static final String FIND_KUNDEN_BY_NACHNAME = PREFIX + "findKundenByNachname";
 	public static final String FIND_KUNDE_BY_ID_FETCH_BESTELLUNGEN = PREFIX
@@ -123,14 +158,22 @@ public class Kunde implements java.io.Serializable {
 	public static final String FIND_KUNDEN_BY_PLZ = PREFIX + "findKundenByPlz";
 	public static final String FIND_KUNDEN_BY_NACHNAME_FETCH_BESTELLUNGEN = PREFIX
 													+ "findKundenByNachnameFetchBestellungen";
+	public static final String FIND_ALL_NACHNAMEN = PREFIX + "findAllNachnamen";
 	public static final String FIND_KUNDE_BY_BESTELLUNG = PREFIX + "findKundeByBestellung";
 	public static final String FIND_KUNDEN_ORDER_BY_ID = PREFIX + "findKundenOrderById";
+	public static final String FIND_KUNDE_BY_USERNAME = PREFIX + "findKundeByUsername";
+	public static final String FIND_USERNAME_BY_USERNAME_PREFIX = PREFIX + "findKundeByUsernamePrefix";
+	public static final String FIND_NACHNAMEN_BY_PREFIX = PREFIX + "findNachnamenByPrefix";
 	
 	public static final String PARAM_KUNDE_ID = "kundeId";
+	public static final String PARAM_KUNDE_ID_PREFIX = "idPrefix";
 	public static final String PARAM_KUNDE_EMAIL = "email";
 	public static final String PARAM_KUNDE_NACHNAME = "nachname";
+	public static final String PARAM_KUNDE_NACHNAME_PREFIX = "nachnamePrefix";
 	public static final String PARAM_KUNDE_ADRESSE_PLZ = "plz";
 	public static final String PARAM_KUNDE_BESTELLUNG_ID = "bestellungId";
+	public static final String PARAM_KUNDE_USERNAME = "username";
+	public static final String PARAM_USERNAME_PREFIX = "usernamePrefix";
 	
 	@Id
 	@GeneratedValue
@@ -189,6 +232,13 @@ public class Kunde implements java.io.Serializable {
 	
 	@Transient
 	private URI bestellungenUri;
+	
+	@ElementCollection(fetch = EAGER)
+	@CollectionTable(name = "kunde_rolle",
+	                 joinColumns = @JoinColumn(name = "kunde_fk", nullable = false),
+	                 uniqueConstraints =  @UniqueConstraint(columnNames = { "kunde_fk", "rolle_fk" }))
+	@Column(table = "kunde_rolle", name = "rolle_fk", nullable = false)
+	private Set<RolleType> rollen;
 
 	@OneToOne(mappedBy = "kunde", cascade = { PERSIST, REMOVE, MERGE })
 	@NotNull(message = "{kundenverwaltung.kunde.adresse.notNull}")
@@ -301,6 +351,14 @@ public class Kunde implements java.io.Serializable {
 		this.bestellungenUri = bestellungenUri;
 	}
 
+	public Set<RolleType> getRollen() {
+		return rollen;
+	}
+
+	public void setRollen(Set<RolleType> rollen) {
+		this.rollen = rollen;
+	}
+	
 	public FamilienstandType getFamilienstand() {
 		return familienstand;
 	}

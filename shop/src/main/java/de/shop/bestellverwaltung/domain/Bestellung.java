@@ -65,6 +65,10 @@ import de.shop.util.PreExistingGroup;
     					+ " FROM Bestellung b JOIN b.bestellpositionen be"
     					+ " JOIN be.artikel a"
     					+ " WHERE a.id =:" + Bestellung.PARAM_ARTIKEL_ID),
+    @NamedQuery(name  = Bestellung.FIND_BESTELLUNGEN_BY_KUNDE_ID_FETCH_LIEFERUNGEN,
+    	        query = "SELECT DISTINCT b"
+    	                + " FROM   Bestellung b LEFT JOIN FETCH b.lieferungen"
+    		            + " WHERE  b.kunde.id = :" + Bestellung.PARAM_KUNDE_ID),   
     @NamedQuery(name  = Bestellung.FIND_BESTELLUNGEN_BY_KUNDE,
     	        query = "SELECT b"
     				    + " FROM   Bestellung b"
@@ -82,11 +86,13 @@ public class Bestellung implements java.io.Serializable {
 	
 	private static final String PREFIX = "Bestellung.";
 	public static final String FIND_BESTELLUNG_BY_ID_FETCH_LIEFERUNGEN =
-		                       PREFIX + "findBestellungenByIdFetchLieferungen";
+		                       		PREFIX + "findBestellungenByIdFetchLieferungen";
 	public static final String FIND_BESTELLUNGEN_BY_KUNDE = PREFIX + "findBestellungenByKunde";
+	public static final String FIND_BESTELLUNGEN_BY_KUNDE_ID_FETCH_LIEFERUNGEN = 
+							    	PREFIX + "findBestellungenByKundeIdFetchLieferungen";
 	public static final String FIND_KUNDE_BY_ID = PREFIX + "findKundeById";
 	public static final String FIND_BESTELLUNGEN_BY_ARTIKEL_ID = 
-			                   PREFIX + "findebestellungbyartikel";
+			                   		PREFIX + "findebestellungbyartikel";
 	public static final String PARAM_ID = "id";
 	public static final String PARAM_ARTIKEL_ID = "aid";
 	public static final String PARAM_KUNDE_ID = "kundeId";

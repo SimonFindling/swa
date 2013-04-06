@@ -37,11 +37,11 @@ import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.rest.UriHelperBestellung;
-import de.shop.bestellverwaltung.service.Bestellverwaltung;
+import de.shop.bestellverwaltung.service.BestellungService;
 import de.shop.kundenverwaltung.dao.KundeDao.FetchType;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.domain.Adresse;
-import de.shop.kundenverwaltung.service.Kundenverwaltung;
+import de.shop.kundenverwaltung.service.KundeService;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
 
@@ -56,10 +56,10 @@ public class KundenverwaltungResource {
 	private static final String VERSION = "1.0";
 	
 	@Inject
-	private Kundenverwaltung kv;
+	private KundeService kv;
 	
 	@Inject
-	private Bestellverwaltung bv;
+	private BestellungService bv;
 	
 	@Inject
 	private UriHelperKunde uriHelperKunde;

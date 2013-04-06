@@ -29,15 +29,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import de.shop.artikelverwaltung.domain.Artikel;
-import de.shop.artikelverwaltung.service.Artikelverwaltung;
+import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.domain.Lieferung;
-import de.shop.bestellverwaltung.service.Bestellverwaltung;
+import de.shop.bestellverwaltung.service.BestellungService;
 import de.shop.kundenverwaltung.dao.KundeDao.FetchType;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.rest.UriHelperKunde;
-import de.shop.kundenverwaltung.service.Kundenverwaltung;
+import de.shop.kundenverwaltung.service.KundeService;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
 
@@ -51,13 +51,13 @@ public class BestellverwaltungResource {
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
 	@Inject
-	private Bestellverwaltung bv;
+	private BestellungService bv;
 	
 	@Inject
-	private Kundenverwaltung kv;
+	private KundeService kv;
 	
 	@Inject
-	private Artikelverwaltung av;
+	private ArtikelService av;
 	
 	@Inject
 	private UriHelperBestellung uriHelperBestellung;

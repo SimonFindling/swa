@@ -8,21 +8,20 @@ import javax.validation.ConstraintViolation;
 import de.shop.kundenverwaltung.domain.Kunde;
 
 @ApplicationException(rollback = true)
-public class KundeValidationException extends AbstractKundenverwaltungException {
-	private static final long serialVersionUID = 5901822410989604222L;
-
-	private final Kunde kunde;
+public class InvalidEmailException extends AbstractKundeServiceException {
+	private static final long serialVersionUID = -8973151010781329074L;
+	
+	private final String email;
 	private final Collection<ConstraintViolation<Kunde>> violations;
 	
-	public KundeValidationException(Kunde kunde, 
-										Collection<ConstraintViolation<Kunde>> violations) {
-		super("Ungueltiger Kunde: " + kunde + ", Violations: " + violations);
-		this.kunde = kunde;
+	public InvalidEmailException(String email, Collection<ConstraintViolation<Kunde>> violations) {
+		super("Ungueltige Email: " + email + ", Violations: " + violations);
+		this.email = email;
 		this.violations = violations;
 	}
 
-	public Kunde getKunde() {
-		return kunde;
+	public String getEmail() {
+		return email;
 	}
 
 	public Collection<ConstraintViolation<Kunde>> getViolations() {

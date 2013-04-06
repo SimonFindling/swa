@@ -49,10 +49,15 @@ import de.shop.util.IdGroup;
 						+ "          AND a.verfuegbar = TRUE"
 			 	        + " ORDER BY a.id ASC"),
 	@NamedQuery(name  = Artikel.FIND_ARTIKEL_MAX_PREIS,
-	query = "SELECT      a"
-            + " FROM     Artikel a"
-			+ " WHERE    a.preis < :" + Artikel.PARAM_PREIS
- 	        + " ORDER BY a.id ASC")
+				query = "SELECT      a"
+						+ " FROM     Artikel a"
+						+ " WHERE    a.preis < :" + Artikel.PARAM_PREIS
+						+ " ORDER BY a.id ASC"),
+ 	@NamedQuery(name  = Artikel.FIND_LADENHUETER,
+ 				query = "SELECT    a"
+ 						+ " FROM   Artikel a"
+ 						+ " WHERE  a NOT IN (SELECT bp.artikel FROM Bestellposition bp)")
+
 })
 @Cacheable
 public class Artikel implements Serializable {
@@ -66,6 +71,7 @@ public class Artikel implements Serializable {
 	public static final String FIND_VERFUEGBARE_ARTIKEL = PREFIX + "findVerfuegbareArtikel";
 	public static final String FIND_ARTIKEL_BY_BEZ = PREFIX + "findArtikelByBez";
 	public static final String FIND_ARTIKEL_MAX_PREIS = PREFIX + "findArtikelByMaxPreis";
+	public static final String FIND_LADENHUETER = PREFIX + "findLadenhueter";
 	
 	public static final String PARAM_BEZEICHNUNG = "bezeichnung";
 	public static final String PARAM_PREIS = "preis";

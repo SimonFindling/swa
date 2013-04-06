@@ -11,6 +11,14 @@ public final class Constants {
 	// JNDI-NAME fuer UserTransaction
 	public static final String TRANSACTION_NAME = "java:jboss/UserTransaction";
 		
+    // JAAS
+	public static final String SECURITY_DOMAIN = "shop";
+	public static final String KUNDE_ROLLE_TABELLE = "kunde_rolle";
+	
+	public static final String HASH_ALGORITHM = "SHA-1";
+	public static final String HASH_ENCODING = "base64";
+	public static final String HASH_CHARSET = "UTF-8";
+	
 	// REST
 	public static final String ARTIKELVERWALTUNG_NS = "urn:shop:artikelverwaltung";
 	public static final String BESTELLVERWALTUNG_NS = "urn:shop:bestellverwaltung";

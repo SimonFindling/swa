@@ -32,7 +32,7 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 import de.shop.artikelverwaltung.domain.Artikel;
-import de.shop.artikelverwaltung.service.Artikelverwaltung;
+import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
 
@@ -46,7 +46,7 @@ public class ArtikelverwaltungResource {
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
 	@Inject
-	private Artikelverwaltung av;
+	private ArtikelService av;
 	
 	@Inject
 	private UriHelperArtikel uriHelperArtikel;
