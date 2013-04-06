@@ -32,7 +32,7 @@ import de.shop.kundenverwaltung.dao.KundeDao.FetchType;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.service.Kundenverwaltung;
 import de.shop.util.Log;
-import de.shop.util.ValidationService;
+import de.shop.util.ValidatorProvider;
 
 @Log
 public class Bestellverwaltung  implements Serializable {
@@ -55,7 +55,7 @@ public class Bestellverwaltung  implements Serializable {
 	private LieferungDao lieferungDao;
 	
 	@Inject
-	private ValidationService validationService;
+	private ValidatorProvider validatorProvider;
 	
 	@Inject
 	@NeueBestellung
@@ -152,7 +152,7 @@ public class Bestellverwaltung  implements Serializable {
 	}
 	
 	private void validateBestellung(Bestellung bestellung, Locale locale, Class<?>... groups) {
-		final Validator validator = validationService.getValidator(locale);
+		final Validator validator = validatorProvider.getValidator(locale);
 		
 		final Set<ConstraintViolation<Bestellung>> violations = validator.validate(bestellung);
 		if (violations != null && !violations.isEmpty()) {
