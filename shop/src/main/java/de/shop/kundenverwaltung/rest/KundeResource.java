@@ -2,6 +2,7 @@ package de.shop.kundenverwaltung.rest;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,7 +30,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.annotations.providers.jaxb.Formatted;
 
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.rest.UriHelperBestellung;
@@ -36,6 +37,7 @@ import de.shop.bestellverwaltung.service.BestellungService;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.domain.Adresse;
 import de.shop.kundenverwaltung.service.KundeService;
+import de.shop.util.JsonFile;
 import de.shop.util.LocaleHelper;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
@@ -84,7 +86,6 @@ public class KundeResource {
 	
 	@GET
 	@Path("{id:[1-9][0-9]*}")
-	@Formatted
 	public Kunde findKundeById(@PathParam("id") Long id) {
 		final Locale locale = localeHelper.getLocale(headers);
 		final Kunde kunde = ks.findKundeById(id, KundeService.FetchType.NUR_KUNDE, locale);
@@ -192,7 +193,6 @@ public class KundeResource {
 	
 	@PUT
 	@Consumes(APPLICATION_JSON)
-	@Produces
 	public void updateKunde(Kunde kunde, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
 		final Locale locale = localeHelper.getLocale(headers);
 		Kunde origKunde = ks.findKundeById(kunde.getId(), KundeService.FetchType.NUR_KUNDE, locale);
@@ -211,5 +211,34 @@ public class KundeResource {
 			final String msg = "Kein Kunde gefunden mit der ID " + origKunde.getId();
 			throw new NotFoundException(msg);
 		}
+	}
+	
+	@Path("{id:[1-9][0-9]*}")
+	@DELETE
+	@Produces
+	public void deleteKunde(@PathParam("id") long kundeId) {
+		ks.deleteKundeById(kundeId);
+	}
+	
+	@Path("{id:[1-9][0-9]*}/file")
+	@POST
+	@Consumes(APPLICATION_JSON)
+	public Response upload(@PathParam("id") Long kundeId, JsonFile file) {
+		final Locale locale = localeHelper.getLocale(headers);
+		ks.setFile(kundeId, file.getBytes(), locale);
+		final URI location = uriHelperKunde.getUriDownload(kundeId, uriInfo);
+		return Response.created(location).build();
+	}
+	
+	@Path("{id:[1-9][0-9]*}/file")
+	@GET
+	public JsonFile download(@PathParam("id") Long kundeId) throws IOException {
+		final Locale locale = localeHelper.getLocale(headers);
+		final Kunde kunde = ks.findKundeById(kundeId, KundeService.FetchType.NUR_KUNDE, locale);
+		if (kunde.getFile() == null) {
+			return new JsonFile(new byte[] {});
+		}
+		
+		return new JsonFile(kunde.getFile().getBytes());
 	}
 }

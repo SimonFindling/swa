@@ -5,7 +5,7 @@ import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -52,7 +51,6 @@ import de.shop.util.PreExistingGroup;
                 	    + " FROM Lieferung l LEFT JOIN FETCH l.bestellungen"
 			            + " WHERE l.liefernr LIKE :" + Lieferung.PARAM_LIEFERNR),
 })
-@Cacheable
 public class Lieferung implements Serializable {
 	private static final long serialVersionUID = -205683416841761248L;
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
@@ -93,12 +91,12 @@ public class Lieferung implements Serializable {
 	private List<URI> bestellungenUris;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date aktualisiert;
 	

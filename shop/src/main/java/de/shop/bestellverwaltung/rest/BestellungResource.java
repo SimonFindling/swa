@@ -106,6 +106,22 @@ public class BestellungResource {
 	
 
 	@GET
+	@Path("{id:[1-9][0-9]*}/kunde")
+	public Kunde findKundeByBestellungId(@PathParam("id") Long id) {
+		final Locale locale = localeHelper.getLocale(headers);
+		Kunde kunde = bs.findKundeById(id);
+		if (kunde == null) {
+			final String msg = "Keine Bestellung gefunden mit der ID " + id;
+			throw new NotFoundException(msg);
+		}
+		
+		kunde = ks.findKundeById(kunde.getId(), KundeService.FetchType.NUR_KUNDE, locale);
+		uriHelperKunde.updateUriKunde(kunde, uriInfo);
+
+		return kunde;
+	}
+
+	@GET
 	@Path("{id:[1-9][0-9]*}/lieferungen")
 	public Collection<Lieferung> findLieferungenByBestellungId(@PathParam("id") Long id) {
 		final Locale locale = localeHelper.getLocale(headers);
@@ -127,25 +143,9 @@ public class BestellungResource {
 
 	
 
-	@GET
-	@Path("{id:[1-9][0-9]*}/kunde")
-	public Kunde findKundeByBestellungId(@PathParam("id") Long id) {
-		final Kunde kunde = bs.findKundeById(id);
-		if (kunde == null) {
-			final String msg = "Keine Bestellung gefunden mit der ID " + id;
-			throw new NotFoundException(msg);
-		}
-
-		uriHelperKunde.updateUriKunde(kunde, uriInfo);
-		return kunde;
-	}
-
-	
 	@POST
 	@Consumes(APPLICATION_JSON)
-	@Produces
 	public Response createBestellung(Bestellung bestellung) {
-		final Locale locale = localeHelper.getLocale(headers);
 		final String kundeUriStr = bestellung.getKundeUri().toString();
 		int startPos = kundeUriStr.lastIndexOf('/') + 1;
 		final String kundeIdStr = kundeUriStr.substring(startPos);
@@ -157,13 +157,9 @@ public class BestellungResource {
 			throw new NotFoundException("Kein Kunde vorhanden mit der ID " + kundeIdStr, e);
 		}
 		
-		final Kunde kunde = ks.findKundeById(kundeId, KundeService.FetchType.MIT_BESTELLUNGEN, locale);
-		if (kunde == null) {
-			throw new NotFoundException("Kein Kunde vorhanden mit der ID " + kundeId);
-		}
-		
-		Collection<Bestellposition> bestellpositionen = bestellung.getBestellpositionen();
-		List<Long> artikelIds = new ArrayList<>(bestellpositionen.size());
+		// persistente Artikel ermitteln
+		final Collection<Bestellposition> bestellpositionen = bestellung.getBestellpositionen();
+		final List<Long> artikelIds = new ArrayList<>(bestellpositionen.size());
 		for (Bestellposition bp : bestellpositionen) {
 			final String artikelUriStr = bp.getArtikelUri().toString();
 			startPos = artikelUriStr.lastIndexOf('/') + 1;
@@ -173,34 +169,46 @@ public class BestellungResource {
 				artikelId = Long.valueOf(artikelIdStr);
 			}
 			catch (NumberFormatException e) {
+				// Ungueltige Artikel-ID: wird nicht beruecksichtigt
 				continue;
 			}
+			
 			artikelIds.add(artikelId);
 		}
 		
 		if (artikelIds.isEmpty()) {
+			// keine einzige gueltige Artikel-ID
 			final StringBuilder sb = new StringBuilder("Keine Artikel vorhanden mit den IDs: ");
 			for (Bestellposition bp : bestellpositionen) {
 				final String artikelUriStr = bp.getArtikelUri().toString();
 				startPos = artikelUriStr.lastIndexOf('/') + 1;
 				sb.append(artikelUriStr.substring(startPos));
-				sb.append(" ");
+				sb.append(' ');
 			}
 			throw new NotFoundException(sb.toString());
 		}
-
-		Collection<Artikel> gefundeneArtikel = as.findArtikelByIds(artikelIds);
+		
+		final List<Artikel> gefundeneArtikel = as.findArtikelByIds(artikelIds);
 		if (gefundeneArtikel.isEmpty()) {
-			throw new NotFoundException("Keine Artikel vorhanden mit den IDs: " + artikelIds);
+			throw new NotFoundException("Keine Artikel gefunden mit den IDs " + artikelIds);
 		}
 		
+		// Bestellpositionen haben URIs fuer persistente Artikel.
+		// Diese persistenten Artikel wurden in einem DB-Zugriff ermittelt (s.o.)
+		// Fuer jede Bestellposition wird der Artikel passend zur Artikel-URL bzw. Artikel-ID gesetzt.
+		// Bestellpositionen mit nicht-gefundene Artikel werden eliminiert.
 		int i = 0;
-		final List<Bestellposition> neueBestellpositionen = new ArrayList<>(bestellpositionen.size());
+		final List<Bestellposition> neueBestellpositionen =
+			                        new ArrayList<>(bestellpositionen.size());
 		for (Bestellposition bp : bestellpositionen) {
+			// Artikel-ID der aktuellen Bestellposition (s.o.):
+			// artikelIds haben gleiche Reihenfolge wie bestellpositionen
 			final long artikelId = artikelIds.get(i++);
 			
+			// Wurde der Artikel beim DB-Zugriff gefunden?
 			for (Artikel artikel : gefundeneArtikel) {
 				if (artikel.getId().longValue() == artikelId) {
+					// Der Artikel wurde gefunden
 					bp.setArtikel(artikel);
 					neueBestellpositionen.add(bp);
 					break;					
@@ -209,18 +217,19 @@ public class BestellungResource {
 		}
 		bestellung.setBestellpositionen(neueBestellpositionen);
 		
-		bestellung = bs.createBestellung(bestellung, kunde, locale);
-
+		// Kunde mit den vorhandenen ("alten") Bestellungen ermitteln
+		final Locale locale = localeHelper.getLocale(headers);
+		bestellung = bs.createBestellung(bestellung, kundeId, locale);
 		final URI bestellungUri = uriHelperBestellung.getUriBestellung(bestellung, uriInfo);
+		LOGGER.trace(bestellungUri);
+		
 		final Response response = Response.created(bestellungUri).build();
-		LOGGER.debugf(bestellungUri.toString());
 		return response;
 	}
 	
 	//TODO updateBestellung Fehler beseitigen
 	@PUT
 	@Consumes(APPLICATION_JSON)
-	@Produces
 	public void updateBestellung(Bestellung bestellung) {
 		final Locale locale = localeHelper.getLocale(headers);
 		Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
@@ -233,7 +242,6 @@ public class BestellungResource {
 		origBestellung.setBestellpositionen(bestellung.getBestellpositionen());
 		origBestellung.setKunde(bestellung.getKunde());
 		origBestellung.setLieferungen(bestellung.getLieferungen());
-		origBestellung.setStatus(bestellung.getStatus());
 		for (Bestellposition bp : origBestellung.getBestellpositionen()) {
 			URI artikelUri = uriHelperArtikel.getUriArtikel(bp.getArtikel(), uriInfo);
 			bp.setArtikelUri(artikelUri);

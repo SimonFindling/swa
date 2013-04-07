@@ -8,7 +8,7 @@ import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
 import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
@@ -44,7 +44,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.jboss.logging.Logger;
 
@@ -107,9 +106,6 @@ public class Bestellung implements java.io.Serializable {
 	@Basic(optional = false)
 	private int version = ERSTE_VERSION;
 	
-	@Column(name = "status_fk")
-	private StatusType status = StatusType.IN_BEARBEITUNG;
-	
 	@OneToMany(fetch = EAGER, cascade = { PERSIST, REMOVE, MERGE})
 	@JoinColumn(name = "bestellung_fk", nullable = false)
 	@OrderColumn(name = "idx", nullable = false)
@@ -137,12 +133,12 @@ public class Bestellung implements java.io.Serializable {
 	private URI lieferungenUri;
 	
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date aktualisiert;
 
@@ -192,14 +188,6 @@ public class Bestellung implements java.io.Serializable {
 	
 	public void setVersion(int version) {
 		this.version = version;
-	}
-	
-	public StatusType getStatus() {
-		return status;
-	}
-
-	public void setStatus(StatusType status) {
-		this.status = status;
 	}
 
 	public List<Bestellposition> getBestellpositionen() {
@@ -272,7 +260,6 @@ public class Bestellung implements java.io.Serializable {
 		this.lieferungenUri = lieferungenUri;
 	}
 
-	@JsonProperty("datum")
 	public Date getErzeugt() {
 		return erzeugt == null ? null : (Date) erzeugt.clone();
 	}
@@ -337,7 +324,6 @@ public class Bestellung implements java.io.Serializable {
 	public String toString() {
 		return "Bestellung [id=" + id 
 			   + "version=" + version
-			   + "status=" + status
 		       + ", erzeugt=" + erzeugt
 		       + ", aktualisiert=" + aktualisiert + ']';
 	}

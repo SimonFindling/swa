@@ -1,5 +1,7 @@
 package de.shop.mail;
 
+import static javax.ejb.TransactionAttributeType.SUPPORTS;
+
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandles;
@@ -7,8 +9,12 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateful;
+import javax.ejb.TransactionAttribute;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -20,10 +26,11 @@ import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.service.NeueBestellung;
 import de.shop.kundenverwaltung.domain.Kunde;
-
+import de.shop.util.Config;
 import de.shop.util.Log;
 
 @ApplicationScoped
+@Stateful
 @Log
 public class BestellverwaltungObserver implements Serializable {
 	private static final long serialVersionUID = 5264518776985621412L;
@@ -33,6 +40,9 @@ public class BestellverwaltungObserver implements Serializable {
 	
 	@Resource(lookup = "java:jboss/mail/Default")
 	private transient Session mailSession;
+	
+	@Inject
+	private Config config;
 	
 	private String mailAbsender;   // in META-INF\seam-beans.xml setzen
 	private String nameAbsender;   // in META-INF\seam-beans.xml setzen
@@ -44,8 +54,12 @@ public class BestellverwaltungObserver implements Serializable {
 			return;
 		}
 		LOGGER.info("Absender fuer Bestellung-Emails: " + mailAbsender);
+		mailAbsender = config.getAbsenderMail();
+		nameAbsender = config.getAbsenderName();
 	}
 	
+	@Asynchronous
+	@TransactionAttribute(SUPPORTS)
 	public void onCreateBestellung(@Observes @NeueBestellung Bestellung bestellung) {
 		final Kunde kunde = bestellung.getKunde();
 		final String mailEmpfaenger = kunde.getEmail();

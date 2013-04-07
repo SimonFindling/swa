@@ -8,7 +8,7 @@ import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.CascadeType.REMOVE;
 import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
@@ -185,6 +185,9 @@ public class Kunde implements java.io.Serializable {
 	@Basic(optional = false)
 	private int version = ERSTE_VERSION;
 	
+	@Column(nullable = false)
+	private short kategorie;
+	
 	@Column(length = NACHNAME_LENGTH_MAX, nullable = false)
 	@NotNull(message = "{kundenverwaltung.kunde.nachname.notNull}")
 	@Size(min = NACHNAME_LENGTH_MIN, max = NACHNAME_LENGTH_MAX, 
@@ -254,12 +257,12 @@ public class Kunde implements java.io.Serializable {
 	private URI fileUri;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date aktualisiert;
 
@@ -328,6 +331,14 @@ public class Kunde implements java.io.Serializable {
 		this.version = version;
 	}
 
+	public short getKategorie() {
+		return kategorie;
+	}
+
+	public void setKategorie(short kategorie) {
+		this.kategorie = kategorie;
+	}
+	
 	public String getNachname() {
 		return nachname;
 	}

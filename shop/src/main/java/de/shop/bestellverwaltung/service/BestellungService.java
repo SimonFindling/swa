@@ -167,6 +167,15 @@ public class BestellungService  implements Serializable {
 		return bestellungen;
 	}
 
+	public Bestellung createBestellung(Bestellung bestellung, Long kundeId, Locale locale) {
+		if (bestellung == null) {
+			return null;
+		}
+
+		final Kunde kunde = ks.findKundeById(kundeId, KundeService.FetchType.MIT_BESTELLUNGEN, locale);
+		return createBestellung(bestellung, kunde, locale);
+	}
+	
 	public Bestellung createBestellung(Bestellung bestellung,
 			                           Kunde kunde,
 			                           Locale locale) {

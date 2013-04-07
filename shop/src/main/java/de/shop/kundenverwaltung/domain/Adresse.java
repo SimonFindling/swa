@@ -1,9 +1,10 @@
 package de.shop.kundenverwaltung.domain;
 
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
 import static de.shop.util.Constants.ERSTE_VERSION;
+
 
 
 
@@ -33,6 +34,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 
 
 
@@ -96,12 +98,12 @@ public class Adresse implements Serializable {
 	private Kunde kunde;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date aktualisiert;
 	

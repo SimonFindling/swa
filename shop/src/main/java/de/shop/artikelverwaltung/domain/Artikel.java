@@ -3,7 +3,7 @@ package de.shop.artikelverwaltung.domain;
 import static de.shop.util.Constants.ERSTE_VERSION;
 import static de.shop.util.Constants.KEINE_ID;
 import static de.shop.util.Constants.MIN_ID;
-import static javax.persistence.TemporalType.DATE;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
@@ -98,12 +98,12 @@ public class Artikel implements Serializable {
 	private boolean verfuegbar;
 	
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date erzeugt;
 
 	@Column(nullable = false)
-	@Temporal(DATE)
+	@Temporal(TIMESTAMP)
 	@JsonIgnore
 	private Date aktualisiert;
 	

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
@@ -29,14 +30,13 @@ public class UriHelperBestellung {
 	private UriHelperArtikel uriHelperArtikel;
 	
 	public void updateUriBestellung(Bestellung bestellung, UriInfo uriInfo) {
-		// URI fuer Kunde setzen
 		final Kunde kunde = bestellung.getKunde();
 		if (kunde != null) {
+			
 			final URI kundeUri = uriHelperKunde.getUriKunde(bestellung.getKunde(), uriInfo);
 			bestellung.setKundeUri(kundeUri);
 		}
 		
-		// URIs fuer Artikel in den Bestellpositionen setzen
 		final List<Bestellposition> bestellpositionen = bestellung.getBestellpositionen();
 		if (bestellpositionen != null && !bestellpositionen.isEmpty()) {
 			for (Bestellposition bp : bestellpositionen) {
@@ -45,11 +45,10 @@ public class UriHelperBestellung {
 			}
 		}
 		
-		// URI fuer Lieferungen setzen
-		final URI uri = uriInfo.getBaseUriBuilder()
-                               .path(BestellungResource.class)
-                               .path(BestellungResource.class, "findLieferungenByBestellungId")
-                               .build(bestellung.getId());
+		final UriBuilder ub = uriInfo.getBaseUriBuilder()
+                                     .path(BestellungResource.class)
+                                     .path(BestellungResource.class, "findLieferungenByBestellungId");
+		final URI uri = ub.build(bestellung.getId());
 		bestellung.setLieferungenUri(uri);
 		
 		LOGGER.trace(bestellung);

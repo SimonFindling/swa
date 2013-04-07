@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.jboss.logging.Logger;
-import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.ArtikelService;
@@ -72,7 +71,7 @@ public class ArtikelResource {
 	
 	@GET
 	@Path("{id:[1-9][0-9]*}")
-	public Artikel findArtikel(@PathParam("id") Long id) {
+	public Artikel findArtikelById(@PathParam("id") Long id) {
 		final Artikel artikel = as.findArtikelById(id);
 		if (artikel == null) {
 			final String msg = "Kein Artikel gefunden mit der ID " + id;
@@ -83,7 +82,6 @@ public class ArtikelResource {
 	}
 	
 	@GET
-	@Wrapped(element = "artikel")
 	public Collection<Artikel> findAllArtikel(@QueryParam("bezeichnung") @DefaultValue("") String bezeichnung) {
 		Collection<Artikel> artikel = null;
 		if ("".equals(bezeichnung)) {
@@ -106,7 +104,6 @@ public class ArtikelResource {
 
 	@POST
 	@Consumes(APPLICATION_JSON)
-	@Produces
 	public Response createArtikel(Artikel artikel) {
 		final Locale locale = localeHelper.getLocale(headers);
 		artikel = as.createArtikel(artikel, locale);
@@ -118,7 +115,6 @@ public class ArtikelResource {
 	
 	@PUT
 	@Consumes(APPLICATION_JSON)
-	@Produces
 	public void updateArtikel(Artikel artikel) {
 		final Locale locale = localeHelper.getLocale(headers);
 		Artikel origArtikel = as.findArtikelById(artikel.getId());
