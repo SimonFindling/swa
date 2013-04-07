@@ -7,16 +7,11 @@ public class InvalidDateException extends AbstractKundeServiceException {
 	
 	private final String invalidDate;
 	
-	public InvalidDateException(String invalidDate) {
-		super("Ungueltiges Datum: " + invalidDate);
-		this.invalidDate = invalidDate;
-	}
-	
 	public InvalidDateException(String invalidDate, Exception e) {
 		super("Ungueltiges Datum: " + invalidDate, e);
 		this.invalidDate = invalidDate;
 	}
-	
+
 	public String getInvalidDate() {
 		return invalidDate;
 	}

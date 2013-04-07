@@ -1,15 +1,11 @@
 package de.shop.artikelverwaltung.rest;
 
-import static java.util.logging.Level.FINER;
-import static java.util.logging.Level.FINEST;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.MediaType.TEXT_XML;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.Collection;
-import java.util.logging.Logger;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,42 +25,55 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.jaxb.Wrapped;
 
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.ArtikelService;
+import de.shop.util.LocaleHelper;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
+import de.shop.util.Transactional;
 
 
 @Path("/artikel")
-@Produces({ APPLICATION_XML, TEXT_XML, APPLICATION_JSON })
+@Produces(APPLICATION_JSON)
 @Consumes
 @RequestScoped
+@Transactional
 @Log
-public class ArtikelverwaltungResource {
+public class ArtikelResource {
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
+	@Context
+	private UriInfo uriInfo;
+	
+	@Context
+	private HttpHeaders headers;
+	
 	@Inject
-	private ArtikelService av;
+	private ArtikelService as;
 	
 	@Inject
 	private UriHelperArtikel uriHelperArtikel;
 	
+	@Inject
+	private LocaleHelper localeHelper;
+	
 	@PostConstruct
 	private void postConstruct() {
-		LOGGER.log(FINER, "CDI-faehiges Bean {0} wurde erzeugt", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
 	}
 	
 	@PreDestroy
 	private void preDestroy() {
-		LOGGER.log(FINER, "CDI-faehiges Bean {0} wird geloescht", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
 	}
 	
 	@GET
 	@Path("{id:[1-9][0-9]*}")
-	public Artikel findArtikel(@PathParam("id") Long id, @Context UriInfo uriInfo) {
-		final Artikel artikel = av.findArtikelById(id);
+	public Artikel findArtikel(@PathParam("id") Long id) {
+		final Artikel artikel = as.findArtikelById(id);
 		if (artikel == null) {
 			final String msg = "Kein Artikel gefunden mit der ID " + id;
 			throw new NotFoundException(msg);
@@ -75,18 +84,17 @@ public class ArtikelverwaltungResource {
 	
 	@GET
 	@Wrapped(element = "artikel")
-	public Collection<Artikel> findAllArtikel(@QueryParam("bezeichnung") @DefaultValue("") String bezeichnung,
-	        @Context UriInfo uriInfo) {
+	public Collection<Artikel> findAllArtikel(@QueryParam("bezeichnung") @DefaultValue("") String bezeichnung) {
 		Collection<Artikel> artikel = null;
 		if ("".equals(bezeichnung)) {
-			artikel = av.findVerfuegbareArtikel();
+			artikel = as.findVerfuegbareArtikel();
 			if (artikel.isEmpty()) {
 				final String msg = "Keine Artikel verfuegbar";
 				throw new NotFoundException(msg);
 			}
 		}
 		else {
-			artikel = av.findArtikelByBezeichnung(bezeichnung);
+			artikel = as.findArtikelByBezeichnung(bezeichnung);
 			if (artikel.isEmpty()) {
 				final String msg = "Kein Artikel Gefunden mit Bezeichnung: " + bezeichnung;
 				throw new NotFoundException(msg);
@@ -97,35 +105,37 @@ public class ArtikelverwaltungResource {
 	}
 
 	@POST
-	@Consumes({ APPLICATION_XML, TEXT_XML })
+	@Consumes(APPLICATION_JSON)
 	@Produces
-	public Response createArtikel(Artikel artikel, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
-		artikel = av.createArtikel(artikel);
-		LOGGER.log(FINEST, "Artikel: {0}", artikel);
+	public Response createArtikel(Artikel artikel) {
+		final Locale locale = localeHelper.getLocale(headers);
+		artikel = as.createArtikel(artikel, locale);
+		LOGGER.debugf("Artikel: {0}", artikel);
 		
 		final URI artikelUri = uriHelperArtikel.getUriArtikel(artikel, uriInfo);
 		return Response.created(artikelUri).build();
 	}
 	
 	@PUT
-	@Consumes({ APPLICATION_XML, TEXT_XML })
+	@Consumes(APPLICATION_JSON)
 	@Produces
-	public void updateArtikel(Artikel artikel, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
-		Artikel origArtikel = av.findArtikelById(artikel.getId());
+	public void updateArtikel(Artikel artikel) {
+		final Locale locale = localeHelper.getLocale(headers);
+		Artikel origArtikel = as.findArtikelById(artikel.getId());
 		if (origArtikel == null) {
 			final String msg = "Kein Artikel gefunden mit der ID " + artikel.getId();
 			throw new NotFoundException(msg);
 		}
-		LOGGER.log(FINEST, "Artikel vorher: %s", origArtikel);
+		LOGGER.debugf("Artikel vorher: %s", origArtikel);
 	
 		origArtikel.setBezeichnung(artikel.getBezeichnung());
 		origArtikel.setPreis(artikel.getPreis());
 		origArtikel.setVerfuegbar(artikel.isVerfuegbar());
 		
-		LOGGER.log(FINEST, "Artikel nachher: %s", origArtikel);
+		LOGGER.debugf("Artikel nachher: %s", origArtikel);
 		
 		
-			artikel = av.updateArtikel(origArtikel);
+			artikel = as.updateArtikel(origArtikel, locale);
 		if (artikel == null) {
 		
 			final String msg = "Kein Artikel gefunden mit der ID " + origArtikel.getId();

@@ -1,4 +1,4 @@
-package de.shop.kundenverwaltung.rest;
+package de.shop.bestellverwaltung.rest;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
@@ -11,22 +11,22 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import de.shop.kundenverwaltung.domain.Kunde;
-import de.shop.kundenverwaltung.service.AbstractKundeValidationException;
+import de.shop.bestellverwaltung.domain.Bestellung;
+import de.shop.bestellverwaltung.service.AbstractBestellungValidationException;
 import de.shop.util.Log;
 
 
 @Provider
 @ApplicationScoped
 @Log
-public class KundeValidationExceptionMapper implements ExceptionMapper<AbstractKundeValidationException> {
+public class BestellungValidationExceptionMapper implements ExceptionMapper<AbstractBestellungValidationException> {
 	private static final String NEWLINE = System.getProperty("line.separator");
 	
 	@Override
-	public Response toResponse(AbstractKundeValidationException e) {
-		final Collection<ConstraintViolation<Kunde>> violations = e.getViolations();
+	public Response toResponse(AbstractBestellungValidationException e) {
+		final Collection<ConstraintViolation<Bestellung>> violations = e.getViolations();
 		final StringBuilder sb = new StringBuilder();
-		for (ConstraintViolation<Kunde> v : violations) {
+		for (ConstraintViolation<Bestellung> v : violations) {
 			sb.append(v.getMessage());
 			sb.append(NEWLINE);
 		}
@@ -36,7 +36,7 @@ public class KundeValidationExceptionMapper implements ExceptionMapper<AbstractK
 		                                  .type(TEXT_PLAIN)
 		                                  .entity(responseStr)
 		                                  .build();
-		
 		return response;
 	}
+
 }

@@ -1,9 +1,6 @@
 package de.shop.bestellverwaltung.rest;
 
-import static java.util.logging.Level.FINER;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.MediaType.TEXT_XML;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
@@ -11,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,6 +16,7 @@ import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -28,36 +25,48 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.jboss.logging.Logger;
+
 import de.shop.artikelverwaltung.domain.Artikel;
+import de.shop.artikelverwaltung.rest.UriHelperArtikel;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.domain.Lieferung;
 import de.shop.bestellverwaltung.service.BestellungService;
-import de.shop.kundenverwaltung.dao.KundeDao.FetchType;
+import de.shop.bestellverwaltung.service.BestellungService.FetchType;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.rest.UriHelperKunde;
 import de.shop.kundenverwaltung.service.KundeService;
+import de.shop.util.LocaleHelper;
 import de.shop.util.Log;
 import de.shop.util.NotFoundException;
+import de.shop.util.Transactional;
 
 
 @Path("/bestellungen")
-@Produces({ APPLICATION_XML, TEXT_XML, APPLICATION_JSON })
+@Produces(APPLICATION_JSON)
 @Consumes
 @RequestScoped
+@Transactional
 @Log
-public class BestellverwaltungResource {
+public class BestellungResource {
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
-	@Inject
-	private BestellungService bv;
+	@Context
+	private UriInfo uriInfo;
+	
+	@Context
+	private HttpHeaders headers;
 	
 	@Inject
-	private KundeService kv;
+	private BestellungService bs;
 	
 	@Inject
-	private ArtikelService av;
+	private KundeService ks;
+	
+	@Inject
+	private ArtikelService as;
 	
 	@Inject
 	private UriHelperBestellung uriHelperBestellung;
@@ -65,20 +74,27 @@ public class BestellverwaltungResource {
 	@Inject
 	private UriHelperKunde uriHelperKunde;
 	
+	@Inject
+	private UriHelperArtikel uriHelperArtikel;
+	
+	@Inject
+	private LocaleHelper localeHelper;
+	
 	@PostConstruct
 	private void postConstruct() {
-		LOGGER.log(FINER, "CDI-faehiges Bean {0} wurde erzeugt", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
 	}
 	
 	@PreDestroy
 	private void preDestroy() {
-		LOGGER.log(FINER, "CDI-faehiges Bean {0} wird geloescht", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
 	}
 	
 	@GET
 	@Path("{id:[1-9][0-9]*}")
-	public Bestellung findBestellungById(@PathParam("id") Long id, @Context UriInfo uriInfo) {
-		final Bestellung bestellung = bv.findBestellungById(id);
+	public Bestellung findBestellungById(@PathParam("id") Long id) {
+		final Locale locale = localeHelper.getLocale(headers);
+		final Bestellung bestellung = bs.findBestellungById(id, FetchType.NUR_BESTELLUNG, locale);
 		if (bestellung == null) {
 			final String msg = "Keine Bestellung gefunden mit der ID " + id;
 			throw new NotFoundException(msg);
@@ -91,8 +107,9 @@ public class BestellverwaltungResource {
 
 	@GET
 	@Path("{id:[1-9][0-9]*}/lieferungen")
-	public Collection<Lieferung> findLieferungenByBestellungId(@PathParam("id") Long id, @Context UriInfo uriInfo) {
-		final Bestellung bestellung = bv.findBestellungenByIdFetchLieferungen(id);
+	public Collection<Lieferung> findLieferungenByBestellungId(@PathParam("id") Long id) {
+		final Locale locale = localeHelper.getLocale(headers);
+		final Bestellung bestellung = bs.findBestellungById(id, FetchType.MIT_LIEFERUNGEN, locale);
 		if (bestellung == null) {
 			final String msg = "Keine Bestellung gefunden mit der ID " + id;
 			throw new NotFoundException(msg);
@@ -112,8 +129,8 @@ public class BestellverwaltungResource {
 
 	@GET
 	@Path("{id:[1-9][0-9]*}/kunde")
-	public Kunde findKundeByBestellungId(@PathParam("id") Long id, @Context UriInfo uriInfo) {
-		final Kunde kunde = bv.findKundeById(id);
+	public Kunde findKundeByBestellungId(@PathParam("id") Long id) {
+		final Kunde kunde = bs.findKundeById(id);
 		if (kunde == null) {
 			final String msg = "Keine Bestellung gefunden mit der ID " + id;
 			throw new NotFoundException(msg);
@@ -125,9 +142,10 @@ public class BestellverwaltungResource {
 
 	
 	@POST
-	@Consumes({ APPLICATION_XML, TEXT_XML })
+	@Consumes(APPLICATION_JSON)
 	@Produces
-	public Response createBestellung(Bestellung bestellung, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
+	public Response createBestellung(Bestellung bestellung) {
+		final Locale locale = localeHelper.getLocale(headers);
 		final String kundeUriStr = bestellung.getKundeUri().toString();
 		int startPos = kundeUriStr.lastIndexOf('/') + 1;
 		final String kundeIdStr = kundeUriStr.substring(startPos);
@@ -139,7 +157,7 @@ public class BestellverwaltungResource {
 			throw new NotFoundException("Kein Kunde vorhanden mit der ID " + kundeIdStr, e);
 		}
 		
-		final Kunde kunde = kv.findKundeById(kundeId, FetchType.MIT_BESTELLUNGEN);
+		final Kunde kunde = ks.findKundeById(kundeId, KundeService.FetchType.MIT_BESTELLUNGEN, locale);
 		if (kunde == null) {
 			throw new NotFoundException("Kein Kunde vorhanden mit der ID " + kundeId);
 		}
@@ -171,7 +189,7 @@ public class BestellverwaltungResource {
 			throw new NotFoundException(sb.toString());
 		}
 
-		Collection<Artikel> gefundeneArtikel = av.findArtikelByIds(artikelIds);
+		Collection<Artikel> gefundeneArtikel = as.findArtikelByIds(artikelIds);
 		if (gefundeneArtikel.isEmpty()) {
 			throw new NotFoundException("Keine Artikel vorhanden mit den IDs: " + artikelIds);
 		}
@@ -191,28 +209,26 @@ public class BestellverwaltungResource {
 		}
 		bestellung.setBestellpositionen(neueBestellpositionen);
 		
-		final List<Locale> locales = headers.getAcceptableLanguages();
-		final Locale locale = locales.isEmpty() ? Locale.getDefault() : locales.get(0);
-		bestellung = bv.createBestellung(bestellung, kunde, locale);
+		bestellung = bs.createBestellung(bestellung, kunde, locale);
 
 		final URI bestellungUri = uriHelperBestellung.getUriBestellung(bestellung, uriInfo);
 		final Response response = Response.created(bestellungUri).build();
-		LOGGER.finest(bestellungUri.toString());
-		
+		LOGGER.debugf(bestellungUri.toString());
 		return response;
 	}
 	
-	/*TODO updateBestellung Fehler beseitigen
+	//TODO updateBestellung Fehler beseitigen
 	@PUT
-	@Consumes({ APPLICATION_XML, TEXT_XML })
+	@Consumes(APPLICATION_JSON)
 	@Produces
-	public void updateBestellung(Bestellung bestellung, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
-		Bestellung origBestellung = bv.findBestellungById(bestellung.getId());
+	public void updateBestellung(Bestellung bestellung) {
+		final Locale locale = localeHelper.getLocale(headers);
+		Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
 		if (origBestellung == null) {
 			final String msg = "Keine Bestellungen gefunden mit der ID " + bestellung.getId();
 			throw new NotFoundException(msg);
 		}
-		LOGGER.log(FINEST, "Bestellung vorher: %s", origBestellung);
+		LOGGER.debugf("Bestellung vorher: %s", origBestellung);
 	
 		origBestellung.setBestellpositionen(bestellung.getBestellpositionen());
 		origBestellung.setKunde(bestellung.getKunde());
@@ -225,16 +241,12 @@ public class BestellverwaltungResource {
 		uriHelperBestellung.updateUriBestellung(origBestellung, uriInfo);
 		uriHelperKunde.updateUriKunde(origBestellung.getKunde(), uriInfo);
 		
-		LOGGER.log(FINEST, "Bestellung nachher: %s", origBestellung);
+		LOGGER.debugf("Bestellung nachher: %s", origBestellung);
 		
-		
-		final List<Locale> locales = headers.getAcceptableLanguages();
-		final Locale locale = locales.isEmpty() ? Locale.getDefault() : locales.get(0);
-		bestellung = bv.updateBestellung(origBestellung, locale);
+		bestellung = bs.updateBestellung(origBestellung, locale);
 		if (bestellung == null) {
 			final String msg = "Keine Bestellung gefunden mit der ID " + origBestellung.getId();
 			throw new NotFoundException(msg);
 		}
 	} 
-	*/
 }

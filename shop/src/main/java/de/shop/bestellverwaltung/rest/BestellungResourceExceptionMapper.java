@@ -9,11 +9,13 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import de.shop.bestellverwaltung.service.AbstractBestellungServiceException;
+import de.shop.util.Log;
 
 
 @Provider
 @ApplicationScoped
-public class BestellverwaltungExceptionMapper implements ExceptionMapper<AbstractBestellungServiceException> {
+@Log
+public class BestellungResourceExceptionMapper implements ExceptionMapper<AbstractBestellungServiceException> {
 	@Override
 	public Response toResponse(AbstractBestellungServiceException e) {
 		final String msg = e.getMessage();
