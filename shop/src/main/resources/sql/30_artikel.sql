@@ -1,6 +1,7 @@
--- ===============================================================================
--- Jede SQL-Anweisung muss in genau 1 Zeile
--- Kommentare durch -- am Zeilenanfang
--- ===============================================================================
-
-INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (300,0,'blaue Jeans', 33.99, 0,'01.01.2007 01:00:00','01.01.2007 01:00:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (300,0,'Hose', 19.99, 0,'01.04.2013 01:30:00','01.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (301,0,'Bluse', 15, 0,'02.04.2013 01:30:00','02.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (302,0,'T-Shirt', 20, 0,'03.04.2013 01:30:00','03.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (303,0,'Pullover', 30,'04.04.2013 01:30:00','04.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (304,0,'Jacke', 70, 0,'05.04.2013 01:30:00','05.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (305,0,'Mantel', 120, 0,'06.04.2013 01:30:00','06.04.2013 01:30:00');
+INSERT INTO artikel (id, version, bezeichnung, preis, verfuegbar, erzeugt, aktualisiert) VALUES (306,0,'Jeans', 30, 0,'07.04.2013 01:30:00','07.04.2013 01:30:00');
