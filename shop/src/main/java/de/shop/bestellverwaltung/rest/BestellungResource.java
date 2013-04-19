@@ -33,6 +33,7 @@ import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
 import de.shop.bestellverwaltung.domain.Lieferung;
+import de.shop.bestellverwaltung.service.BestellungDoesntExistException;
 import de.shop.bestellverwaltung.service.BestellungService;
 import de.shop.bestellverwaltung.service.BestellungService.FetchType;
 import de.shop.kundenverwaltung.domain.Kunde;
@@ -234,8 +235,7 @@ public class BestellungResource {
 		final Locale locale = localeHelper.getLocale(headers);
 		Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
 		if (origBestellung == null) {
-			final String msg = "Keine Bestellungen gefunden mit der ID " + bestellung.getId();
-			throw new NotFoundException(msg);
+			throw new BestellungDoesntExistException(origBestellung.getId());
 		}
 		LOGGER.debugf("Bestellung vorher: %s", origBestellung);
 	
@@ -253,8 +253,7 @@ public class BestellungResource {
 		
 		bestellung = bs.updateBestellung(origBestellung, locale);
 		if (bestellung == null) {
-			final String msg = "Keine Bestellung gefunden mit der ID " + origBestellung.getId();
-			throw new NotFoundException(msg);
+			throw new BestellungDoesntExistException(origBestellung.getId());
 		}
 	} 
 }
