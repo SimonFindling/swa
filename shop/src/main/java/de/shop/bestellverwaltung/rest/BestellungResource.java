@@ -235,7 +235,7 @@ public class BestellungResource {
 		final Locale locale = localeHelper.getLocale(headers);
 		Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
 		if (origBestellung == null) {
-			throw new BestellungDoesntExistException(origBestellung.getId());
+			throw new BestellungDoesntExistException(bestellung.getId());
 		}
 		LOGGER.debugf("Bestellung vorher: %s", origBestellung);
 	
