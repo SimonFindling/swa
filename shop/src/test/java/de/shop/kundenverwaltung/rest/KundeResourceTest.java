@@ -1,26 +1,4 @@
-package de.shop.kundeverwaltung.rest;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
-import java.math.BigDecimal;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.xml.bind.DatatypeConverter;
-
-import org.jboss.arquillian.junit.Arquillian;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
+package de.shop.kundenverwaltung.rest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static de.shop.util.TestConstants.ACCEPT;
@@ -47,21 +25,42 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.junit.runners.MethodSorters.NAME_ASCENDING;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.xml.bind.DatatypeConverter;
+
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.jayway.restassured.response.Response;
 
-import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.util.AbstractResourceTest;
 import de.shop.util.NoMimeTypeException;
 
+@Ignore
 @RunWith(Arquillian.class)
 @FixMethodOrder(NAME_ASCENDING)
-public class KundeResourceTest {	
+public class KundeResourceTest extends AbstractResourceTest {	
 private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
 	private static final Long KUNDE_ID_VORHANDEN = Long.valueOf(101);
@@ -102,11 +101,6 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		assertThat(true, is(true));
 	}
 	
-	@Ignore
-	@Test
-	public void notYetImplemented() {
-		fail();
-	}
 	
 	@Test
 	public void findKundeById() {
@@ -195,7 +189,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 	}
 	
 	@Test
-	public void create Kunde() {
+	public void createKunde() {
 		LOGGER.finer("BEGINN");
 		
 		// Given
@@ -215,7 +209,6 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		final String password = PASSWORD;
 		
 		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
-		             		          .add("type", Kunde)
 		             		          .add("nachname", nachname)
 		             		          .add("vorname", vorname)
 		             		          .add("email", email)
@@ -261,7 +254,6 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		final String nachname = NEUER_NACHNAME;
 		
 		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
-            		                  .add("type", Kunde)
             		                  .add("nachname", nachname)
             		                  .build();
 		
@@ -292,7 +284,6 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		final String password = PASSWORD;
 
 		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
-   		                              .add("type", Kunde)
    		                              .add("nachname", nachname)
    		                              .add("vorname", vorname)
    		                              .add("email", email)
