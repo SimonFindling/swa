@@ -225,7 +225,7 @@ public class Kunde implements java.io.Serializable {
 	
 	@Transient
 	@AssertTrue(message = "{kundenverwaltung.kunde.agb}")
-	private boolean agbAkzeptiert;
+	private boolean agbAkzeptiert = true;
 	
 	@OneToMany
 	@JoinColumn(name = "kunde_fk", nullable = false)
