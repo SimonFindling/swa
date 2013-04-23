@@ -68,7 +68,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 	private static final Long KUNDE_ID_DELETE = Long.valueOf(122);
 	private static final Long KUNDE_ID_DELETE_MIT_BESTELLUNGEN = Long.valueOf(101);
 	private static final Long KUNDE_ID_DELETE_FORBIDDEN = Long.valueOf(101);
-	private static final String NACHNAME_VORHANDEN = "A";
+	private static final String NACHNAME_VORHANDEN = "Aa";
 	private static final String NACHNAME_NICHT_VORHANDEN = "Falschername";
 	private static final String NEUER_NACHNAME = "Nachnameneu";
 	private static final String NEUER_NACHNAME_INVALID = "!";
@@ -139,9 +139,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
     	assertThat(response.getStatusCode(), is(HTTP_NOT_FOUND));
 		LOGGER.finer("ENDE");
 	}
-	//TODO  Error in Test
-	//		KundeResourceTest.findKundenByNachnameVorhanden:159 » JsonParsing Unexpected c...
-	@Ignore
+	
 	public void findKundenByNachnameVorhanden() {
 		LOGGER.finer("BEGINN");
 		
