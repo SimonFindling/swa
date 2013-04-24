@@ -140,6 +140,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		LOGGER.finer("ENDE");
 	}
 	
+	@Test
 	public void findKundenByNachnameVorhanden() {
 		LOGGER.finer("BEGINN");
 		
@@ -296,11 +297,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		LOGGER.finer("ENDE");
 	}
 
-	//TODO Test schlägt fehl.
-	//  KundeResourceTest.updateKunde:347
-	//  Expected: is <204>
-    //  but: was <409>
-	@Ignore
+	@Test
 	public void updateKunde() {
 		LOGGER.finer("BEGINN");
 		
@@ -411,11 +408,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		LOGGER.finer("ENDE");
 	}
 	
-	//TODO  Test schlägt fehl
-	//		KundeResourceTest.uploadDownload:451 
-	//		Expected: is <201>
-    //		but: was <500>
-	@Ignore
+	@Test
 	public void uploadDownload() throws IOException {
 		LOGGER.finer("BEGINN");
 		

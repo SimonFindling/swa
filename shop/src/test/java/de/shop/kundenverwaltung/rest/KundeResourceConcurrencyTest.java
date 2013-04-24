@@ -48,11 +48,8 @@ public class KundeResourceConcurrencyTest extends AbstractResourceTest {
 	private static final String NEUER_NACHNAME_2 = "Neuername";
 	private static final Long KUNDE_ID_DELETE1 = Long.valueOf(122);
 	private static final Long KUNDE_ID_DELETE2 = Long.valueOf(124);
-	//TODO Test schlägt fehl
-	//	    KundeResourceConcurrencyTest.updateUpdate:92 
-	//		Expected: is <204>
-    //		but: was <409>
-	@Ignore
+
+	@Test
 	public void updateUpdate() throws InterruptedException, ExecutionException {
 		LOGGER.finer("BEGINN");
 		
@@ -170,11 +167,7 @@ public class KundeResourceConcurrencyTest extends AbstractResourceTest {
 		LOGGER.finer("ENDE");
 	}
 	
-	//TODO Test schlägt fehl
-	//	    KundeResourceConcurrencyTest.deleteUpdate:217
-	//		Expected: is <204>
-    //		but: was <409>
-	@Ignore
+	@Test
 	public void deleteUpdate() throws InterruptedException, ExecutionException {
 		LOGGER.finer("BEGINN");
 		
