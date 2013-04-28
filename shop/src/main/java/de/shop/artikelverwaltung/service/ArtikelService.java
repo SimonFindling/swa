@@ -165,5 +165,4 @@ public class ArtikelService implements Serializable {
 		em.merge(artikel);
 		return artikel;
 	}
-	
 }

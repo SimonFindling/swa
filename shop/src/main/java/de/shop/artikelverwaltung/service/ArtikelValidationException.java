@@ -20,7 +20,7 @@ private static final long serialVersionUID = -4634273195424451330L;
 		super(violations.toString());
 		
 		if (artikel == null) {
-			this.erzeugt = null;;
+			this.erzeugt = null;
 		}
 		else {
 			this.erzeugt = artikel.getErzeugt();

@@ -117,7 +117,7 @@ public class ArtikelResource {
 	@Consumes(APPLICATION_JSON)
 	public void updateArtikel(Artikel artikel) {
 		final Locale locale = localeHelper.getLocale(headers);
-		Artikel origArtikel = as.findArtikelById(artikel.getId());
+		final Artikel origArtikel = as.findArtikelById(artikel.getId());
 		if (origArtikel == null) {
 			final String msg = "Kein Artikel gefunden mit der ID " + artikel.getId();
 			throw new NotFoundException(msg);
