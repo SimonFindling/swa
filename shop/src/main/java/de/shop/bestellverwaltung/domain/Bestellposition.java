@@ -181,5 +181,4 @@ public class Bestellposition implements Serializable {
 				+ ", artikel.id=" + artikel.getId()
 		        + ", anzahl=" + anzahl + "]";
 	}
-
 }

@@ -233,7 +233,7 @@ public class BestellungResource {
 	@Consumes(APPLICATION_JSON)
 	public void updateBestellung(Bestellung bestellung) {
 		final Locale locale = localeHelper.getLocale(headers);
-		Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
+		final Bestellung origBestellung = bs.findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
 		if (origBestellung == null) {
 			throw new BestellungDoesntExistException(bestellung.getId());
 		}
@@ -243,7 +243,7 @@ public class BestellungResource {
 		origBestellung.setKunde(bestellung.getKunde());
 		origBestellung.setLieferungen(bestellung.getLieferungen());
 		for (Bestellposition bp : origBestellung.getBestellpositionen()) {
-			URI artikelUri = uriHelperArtikel.getUriArtikel(bp.getArtikel(), uriInfo);
+		final URI artikelUri = uriHelperArtikel.getUriArtikel(bp.getArtikel(), uriInfo);
 			bp.setArtikelUri(artikelUri);
 		}
 		uriHelperBestellung.updateUriBestellung(origBestellung, uriInfo);

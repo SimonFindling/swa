@@ -106,7 +106,7 @@ public class Bestellung implements java.io.Serializable {
 	@Basic(optional = false)
 	private int version = ERSTE_VERSION;
 	
-	@OneToMany(fetch = EAGER, cascade = { PERSIST, REMOVE, MERGE})
+	@OneToMany(fetch = EAGER, cascade = { PERSIST, REMOVE, MERGE })
 	@JoinColumn(name = "bestellung_fk", nullable = false)
 	@OrderColumn(name = "idx", nullable = false)
 	@NotEmpty(message = "{bestellverwaltung.bestellung.bestellpositionen.notEmpty}")

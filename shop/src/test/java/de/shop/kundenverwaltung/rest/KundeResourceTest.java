@@ -48,7 +48,6 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -86,7 +85,7 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 	//private static final String FILENAME = "video.mp4";
 	private static final String FILENAME_UPLOAD = "src/test/resources/rest/" + FILENAME;
 	private static final String FILENAME_DOWNLOAD = "target/" + FILENAME;
-	private static final CopyOption[] COPY_OPTIONS = { REPLACE_EXISTING };
+	private static final CopyOption[] COPY_OPTIONS = {REPLACE_EXISTING };
 	private static final Long KUNDE_ID_UPLOAD = Long.valueOf(102);
 
 	private static final String FILENAME_INVALID_MIMETYPE = "image.bmp";

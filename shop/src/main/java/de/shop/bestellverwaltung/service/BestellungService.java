@@ -207,7 +207,7 @@ public class BestellungService  implements Serializable {
 		}
 		
 		final Bestellung vorhandeneBestellung = findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
-		if(vorhandeneBestellung.getId().longValue() != bestellung.getId().longValue()) {
+		if (vorhandeneBestellung.getId().longValue() != bestellung.getId().longValue()) {
 			throw new BestellungDoesntExistException(bestellung.getId());
 		}
 		
