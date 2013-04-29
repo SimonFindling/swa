@@ -195,7 +195,7 @@ public class KundeResource {
 	@Consumes(APPLICATION_JSON)
 	public void updateKunde(Kunde kunde, @Context UriInfo uriInfo, @Context HttpHeaders headers) {
 		final Locale locale = localeHelper.getLocale(headers);
-		Kunde origKunde = ks.findKundeById(kunde.getId(), KundeService.FetchType.NUR_KUNDE, locale);
+	final Kunde origKunde = ks.findKundeById(kunde.getId(), KundeService.FetchType.NUR_KUNDE, locale);
 		if (origKunde == null) {
 			final String msg = "Kein Kunde gefunden mit der ID " + kunde.getId();
 			throw new NotFoundException(msg);
