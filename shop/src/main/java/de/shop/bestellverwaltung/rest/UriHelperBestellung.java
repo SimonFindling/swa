@@ -2,6 +2,7 @@ package de.shop.bestellverwaltung.rest;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,6 +15,7 @@ import org.jboss.logging.Logger;
 import de.shop.artikelverwaltung.rest.UriHelperArtikel;
 import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
+import de.shop.bestellverwaltung.domain.Lieferung;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.rest.UriHelperKunde;
 import de.shop.util.Log;
@@ -50,6 +52,16 @@ public class UriHelperBestellung {
                                      .path(BestellungResource.class, "findLieferungenByBestellungId");
 		final URI uri = ub.build(bestellung.getId());
 		bestellung.setLieferungenUri(uri);
+				
+		for (Lieferung lieferung : bestellung.getLieferungen()) {
+			List<Bestellung> bestellungen = lieferung.getBestellungen();
+			List<URI> uris = new ArrayList<URI>();
+			
+			for(Bestellung best : bestellungen) {
+				uris.add(getUriBestellung(best, uriInfo));
+			}
+			lieferung.setBestellungenUris(uris);
+		}
 		
 		LOGGER.trace(bestellung);
 	}
@@ -60,5 +72,20 @@ public class UriHelperBestellung {
 		                       .path(BestellungResource.class, "findBestellungById")
 		                       .build(bestellung.getId());
 		return uri;
+	}
+	
+	public List<URI> getUrisBestellungen(Lieferung lieferung, UriInfo uriInfo) {
+		final List<Bestellung> bestellungen = lieferung.getBestellungen();
+		
+		List<URI> uris = new ArrayList<URI>();
+		for(Bestellung bestellung : bestellungen) {
+			final URI uri = uriInfo.getBaseUriBuilder()
+								   .path(BestellungResource.class)
+								   .path(BestellungResource.class, "findLieferungenByBestellungId")
+								   .build(bestellung.getId());
+			uris.add(uri);
+		}
+		
+		return uris;
 	}
 }

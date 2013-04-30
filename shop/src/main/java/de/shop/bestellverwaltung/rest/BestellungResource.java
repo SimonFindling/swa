@@ -229,6 +229,7 @@ public class BestellungResource {
 	}
 	
 	//TODO updateBestellung Fehler beseitigen
+	/*
 	@PUT
 	@Consumes(APPLICATION_JSON)
 	public void updateBestellung(Bestellung bestellung) {
@@ -256,4 +257,5 @@ public class BestellungResource {
 			throw new BestellungDoesntExistException(origBestellung.getId());
 		}
 	} 
+	*/
 }

@@ -6,12 +6,14 @@ import static de.shop.util.TestConstants.ARTIKEL_URI;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_KUNDE_PATH;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_PATH;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_PATH_PARAM;
+import static de.shop.util.TestConstants.BESTELLUNGEN_ID_LIEFERUNGEN_PATH;
 import static de.shop.util.TestConstants.ARTIKEL_ID_PATH_PARAM;
 import static de.shop.util.TestConstants.KUNDEN_ID_PATH_PARAM;
 import static de.shop.util.TestConstants.BESTELLUNGEN_PATH;
 import static de.shop.util.TestConstants.KUNDEN_URI;
 import static de.shop.util.TestConstants.LOCATION;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -24,6 +26,7 @@ import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 import java.util.logging.Logger;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -43,6 +46,7 @@ public class BestellungResourceTest extends AbstractResourceTest {
 	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getName());
 	
 	private static final Long BESTELLUNG_ID_VORHANDEN = Long.valueOf(400);
+	private static final Long BESTELLUNG_ID_NICHT_VORHANDEN = Long.valueOf(100000);
 	private static final Long KUNDE_ID_VORHANDEN = Long.valueOf(101);
 	private static final Long ARTIKEL_ID_VORHANDEN_1 = Long.valueOf(300);
 	private static final Long ARTIKEL_ID_VORHANDEN_2 = Long.valueOf(301);
@@ -75,6 +79,22 @@ public class BestellungResourceTest extends AbstractResourceTest {
 	}
 
 	@Test
+	public void findBestellungByIdNichtVorhanden() {
+		LOGGER.finest("BEGINN");
+		// Given
+		final Long bestellungId = BESTELLUNG_ID_NICHT_VORHANDEN;
+		
+		// When
+		final Response response = given().header(ACCEPT, APPLICATION_JSON)
+										 .pathParameter(BESTELLUNGEN_ID_PATH_PARAM, bestellungId)
+										 .get(BESTELLUNGEN_ID_PATH);
+		
+		// Then
+		assertThat(response.getStatusCode(), is(HTTP_NOT_FOUND));
+		LOGGER.finest("ENDE");
+	}
+	
+	@Test
 	public void findKundeByBestellungId() {
 		LOGGER.finer("BEGINN");
 		
@@ -98,53 +118,28 @@ public class BestellungResourceTest extends AbstractResourceTest {
 
 		LOGGER.finer("ENDE");
 	}
-	
-	public void findBestellungenByKunde() {
+	@Test
+	public void findLieferungenByBestellungId() {
 		LOGGER.finer("BEGINN");
 		
-		// Given
-		final Long kundeId = KUNDE_ID_VORHANDEN;
+		// GIVEN
+		final Long bestellungId = BESTELLUNG_ID_VORHANDEN;
 		
-		// When
+		// WHEN
 		final Response response = given().header(ACCEPT, APPLICATION_JSON)
-				                         .pathParameter(KUNDEN_ID_PATH_PARAM, kundeId)
-                                         .get(KUNDEN_ID_PATH_PARAM);
-		
-		// Then
+										 .pathParameter(BESTELLUNGEN_ID_PATH_PARAM, bestellungId)
+										 .get(BESTELLUNGEN_ID_LIEFERUNGEN_PATH);
+		// THEN
 		assertThat(response.getStatusCode(), is(HTTP_OK));
 		
-		try (final JsonReader jsonReader =
-				              getJsonReaderFactory().createReader(new StringReader(response.asString()))) {
-			final JsonObject jsonObject = jsonReader.readObject();
-			assertThat(jsonObject.getString("kundenUri"),
-					   endsWith("/bestellungen/" + jsonObject.getInt("id") + "/kunden"));
+		try (final JsonReader jsonReader = 
+							  getJsonReaderFactory().createReader(new StringReader(response.asString()))) {
+			final JsonArray jsonArray = jsonReader.readArray();
+			LOGGER.finest(jsonArray.toString());
+			assertThat(jsonArray.toString(), endsWith("bestellungen/" + bestellungId + "\"]}]"));
 		}
-
-		LOGGER.finer("ENDE");
-	}
-
-	public void findBestellungenByArtikel() {
-		LOGGER.finer("BEGINN");
 		
-		// Given
-		final Long artikelId = ARTIKEL_ID_VORHANDEN_1;
-		
-		// When
-		final Response response = given().header(ACCEPT, APPLICATION_JSON)
-				                         .pathParameter(ARTIKEL_ID_PATH_PARAM, artikelId)
-                                         .get(ARTIKEL_ID_PATH_PARAM);
-		
-		// Then
-		assertThat(response.getStatusCode(), is(HTTP_OK));
-		
-		try (final JsonReader jsonReader =
-				              getJsonReaderFactory().createReader(new StringReader(response.asString()))) {
-			final JsonObject jsonObject = jsonReader.readObject();
-			assertThat(jsonObject.getString("artikelUri"),
-					   endsWith("/bestellungen/" + jsonObject.getInt("id") + "/artikel"));
-		}
-
-		LOGGER.finer("ENDE");
+		LOGGER.finer("Ende");
 	}
 	
 	@Test
