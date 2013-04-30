@@ -89,7 +89,8 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 	private static final Long KUNDE_ID_UPLOAD = Long.valueOf(102);
 
 	private static final String FILENAME_INVALID_MIMETYPE = "image.bmp";
-	private static final String FILENAME_UPLOAD_INVALID_MIMETYPE = "src/test/resources/rest/" + FILENAME_INVALID_MIMETYPE;
+	private static final String FILENAME_UPLOAD_INVALID_MIMETYPE = "src/test/resources/rest/"
+																	+ FILENAME_INVALID_MIMETYPE;
 	
 	
 	@Test

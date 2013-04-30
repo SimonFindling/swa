@@ -49,7 +49,7 @@ import de.shop.util.PreExistingGroup;
 	@NamedQuery(name  = Lieferung.FIND_LIEFERUNGEN_BY_LIEFERNR_FETCH_BESTELLUNGEN,
                 query = "SELECT l"
                 	    + " FROM Lieferung l LEFT JOIN FETCH l.bestellungen"
-			            + " WHERE l.liefernr LIKE :" + Lieferung.PARAM_LIEFERNR),
+			            + " WHERE l.liefernr LIKE :" + Lieferung.PARAM_LIEFERNR)
 })
 public class Lieferung implements Serializable {
 	private static final long serialVersionUID = -205683416841761248L;

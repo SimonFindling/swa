@@ -135,7 +135,8 @@ public class BestellungService  implements Serializable {
 	}
 	
 	public List<Bestellung> findBestellungenByArtikel(Artikel artikel) {
-		final List<Bestellung> bestellungen = em.createNamedQuery(Bestellung.FIND_BESTELLUNGEN_BY_ARTIKEL_ID, Bestellung.class)
+		final List<Bestellung> bestellungen = em.createNamedQuery(Bestellung.FIND_BESTELLUNGEN_BY_ARTIKEL_ID, 
+																	Bestellung.class)
 												.setParameter(Bestellung.PARAM_ARTIKEL_ID, artikel.getId())
 												.getResultList();
 		return bestellungen;
@@ -206,7 +207,8 @@ public class BestellungService  implements Serializable {
 			return null;
 		}
 		
-		final Bestellung vorhandeneBestellung = findBestellungById(bestellung.getId(), FetchType.NUR_BESTELLUNG, locale);
+		final Bestellung vorhandeneBestellung = findBestellungById(bestellung.getId(),
+																	FetchType.NUR_BESTELLUNG, locale);
 		if (vorhandeneBestellung.getId().longValue() != bestellung.getId().longValue()) {
 			throw new BestellungDoesntExistException(bestellung.getId());
 		}

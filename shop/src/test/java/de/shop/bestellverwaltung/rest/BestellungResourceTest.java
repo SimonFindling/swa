@@ -7,8 +7,6 @@ import static de.shop.util.TestConstants.BESTELLUNGEN_ID_KUNDE_PATH;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_PATH;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_PATH_PARAM;
 import static de.shop.util.TestConstants.BESTELLUNGEN_ID_LIEFERUNGEN_PATH;
-import static de.shop.util.TestConstants.ARTIKEL_ID_PATH_PARAM;
-import static de.shop.util.TestConstants.KUNDEN_ID_PATH_PARAM;
 import static de.shop.util.TestConstants.BESTELLUNGEN_PATH;
 import static de.shop.util.TestConstants.KUNDEN_URI;
 import static de.shop.util.TestConstants.LOCATION;

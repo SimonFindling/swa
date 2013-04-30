@@ -123,7 +123,7 @@ import de.shop.util.IdGroup;
 	@NamedQuery(name  = Kunde.FIND_USERNAME_BY_USERNAME_PREFIX,
   	            query = "SELECT   CONCAT('', k.id)"
   				+ " FROM  Kunde k"
-   	            + " WHERE CONCAT('', k.id) LIKE :" + Kunde.PARAM_USERNAME_PREFIX),
+   	            + " WHERE CONCAT('', k.id) LIKE :" + Kunde.PARAM_USERNAME_PREFIX)
 })
 @ScriptAssert(lang = "javascript",
 				script = "(_this.password == null && _this.passwordWdh == null)"

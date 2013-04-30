@@ -54,10 +54,10 @@ public class UriHelperBestellung {
 		bestellung.setLieferungenUri(uri);
 				
 		for (Lieferung lieferung : bestellung.getLieferungen()) {
-			List<Bestellung> bestellungen = lieferung.getBestellungen();
-			List<URI> uris = new ArrayList<URI>();
+			final List<Bestellung> bestellungen = lieferung.getBestellungen();
+			final List<URI> uris = new ArrayList<URI>();
 			
-			for(Bestellung best : bestellungen) {
+			for (Bestellung best : bestellungen) {
 				uris.add(getUriBestellung(best, uriInfo));
 			}
 			lieferung.setBestellungenUris(uris);
@@ -77,8 +77,8 @@ public class UriHelperBestellung {
 	public List<URI> getUrisBestellungen(Lieferung lieferung, UriInfo uriInfo) {
 		final List<Bestellung> bestellungen = lieferung.getBestellungen();
 		
-		List<URI> uris = new ArrayList<URI>();
-		for(Bestellung bestellung : bestellungen) {
+		final List<URI> uris = new ArrayList<URI>();
+		for (Bestellung bestellung : bestellungen) {
 			final URI uri = uriInfo.getBaseUriBuilder()
 								   .path(BestellungResource.class)
 								   .path(BestellungResource.class, "findLieferungenByBestellungId")

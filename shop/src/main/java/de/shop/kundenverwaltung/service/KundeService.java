@@ -29,10 +29,12 @@ import org.jboss.logging.Logger;
 import com.google.common.base.Strings;
 
 import de.shop.auth.service.jboss.AuthService;
-import de.shop.bestellverwaltung.domain.*;
+import de.shop.bestellverwaltung.domain.Bestellposition;
+import de.shop.bestellverwaltung.domain.Bestellung;
+import de.shop.bestellverwaltung.domain.Bestellposition_;
+import de.shop.bestellverwaltung.domain.Bestellung_;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.domain.Kunde_;
-import de.shop.kundenverwaltung.domain.PasswordGroup;
 import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.File;
 import de.shop.util.FileHelper;
