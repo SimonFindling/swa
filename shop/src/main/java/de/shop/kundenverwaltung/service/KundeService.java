@@ -377,7 +377,7 @@ public class KundeService implements Serializable {
 			return kunde;
 		}
 		
-		validateKunde(kunde, locale, Default.class, PasswordGroup.class);
+		validateKunde(kunde, locale, Default.class);
 		
 		final Kunde vorhandenerKunde = findKundeByEmail(kunde.getEmail(), locale);
 		
@@ -399,7 +399,7 @@ public class KundeService implements Serializable {
 			return null;
 		}
 
-		validateKunde(kunde, locale, Default.class, PasswordGroup.class, IdGroup.class);
+		validateKunde(kunde, locale, Default.class, IdGroup.class);
 
 		em.detach(kunde);
 
