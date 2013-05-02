@@ -13,6 +13,7 @@ import static de.shop.util.TestConstants.LOCATION;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
@@ -176,6 +177,37 @@ public class BestellungResourceTest extends AbstractResourceTest {
 		final String idStr = location.substring(startPos + 1);
 		final Long id = Long.valueOf(idStr);
 		assertThat(id.longValue() > 0, is(true));
+
+		LOGGER.finer("ENDE");
+	}
+	
+	@Test
+	public void createBestellungOhneBerechtigung() {
+		LOGGER.finer("BEGINN");
+		
+		// Given
+		final Long kundeId = KUNDE_ID_VORHANDEN;
+		final Long artikelId1 = ARTIKEL_ID_VORHANDEN_1;
+		final Long artikelId2 = ARTIKEL_ID_VORHANDEN_2;
+
+		// Neues, client-seitiges Bestellungsobjekt als JSON-Datensatz
+		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
+				                      .add("kundeUri", KUNDEN_URI + "/" + kundeId)
+				                      .add("bestellpositionen", getJsonBuilderFactory().createArrayBuilder()
+				            		                            .add(getJsonBuilderFactory().createObjectBuilder()
+				            		                                 .add("artikelUri", ARTIKEL_URI + "/" + artikelId1)
+				            		                                 .add("anzahl", 1))
+				            		                            .add(getJsonBuilderFactory().createObjectBuilder()
+				            		                                 .add("artikelUri", ARTIKEL_URI + "/" + artikelId2)
+				            		                                 .add("anzahl", 2)))
+				                      .build();
+
+		// When
+		final Response response = given().contentType(APPLICATION_JSON)
+				                         .body(jsonObject.toString())
+				                         .post(BESTELLUNGEN_PATH);
+		
+		assertThat(response.getStatusCode(), is(HTTP_UNAUTHORIZED));
 
 		LOGGER.finer("ENDE");
 	}

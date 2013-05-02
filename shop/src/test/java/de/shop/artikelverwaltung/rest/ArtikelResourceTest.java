@@ -12,6 +12,7 @@ import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -173,6 +174,32 @@ public class ArtikelResourceTest extends AbstractResourceTest {
 		final String idStr = location.substring(startPos + 1);
 		final Long id = Long.valueOf(idStr);
 		assertThat(id.longValue() > 0, is(true));
+
+		LOGGER.finer("ENDE");
+	}
+	
+	@Test
+	public void createArtikelOhneBerechtigung() {
+		LOGGER.finer("BEGINN");
+		
+		// Given
+		final String bezeichnung = NEUE_BEZEICHNUNG;
+		final double preis = NEUER_PREIS;
+		final boolean verfuegbar = NEUE_VERFUEGBARKEIT;
+
+		// When
+		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
+		             		          .add("bezeichnung", bezeichnung)
+		             		          .add("preis", preis)
+		             		          .add("verfuegbar", verfuegbar)
+		                              .build();
+
+		final Response response = given().contentType(APPLICATION_JSON)
+				                         .body(jsonObject.toString())
+                                         .post(ARTIKEL_PATH);
+		
+		// Then
+		assertThat(response.getStatusCode(), is(HTTP_UNAUTHORIZED));
 
 		LOGGER.finer("ENDE");
 	}

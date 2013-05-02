@@ -185,6 +185,49 @@ private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().loo
 		LOGGER.finer("ENDE");
 	}
 	
+	
+	@Test
+	public void createKundeOhneBerechtigung() {
+		LOGGER.finer("BEGINN");
+		
+		// Given
+		final String nachname = NEUER_NACHNAME;
+		final String vorname = NEUER_VORNAME;
+		final String email = NEUE_EMAIL;
+		final short kategorie = NEUE_KATEGORIE;
+		final BigDecimal rabatt = NEUER_RABATT;
+		final boolean agbAkzeptiert = true;
+		final String plz = NEUE_PLZ;
+		final String ort = NEUER_ORT;
+		final String strasse = NEUE_STRASSE;
+		final String hausnr = NEUE_HAUSNR;
+
+		
+		final JsonObject jsonObject = getJsonBuilderFactory().createObjectBuilder()
+		             		          .add("nachname", nachname)
+		             		          .add("vorname", vorname)
+		             		          .add("email", email)
+		             		          .add("kategorie", kategorie)
+		             		          .add("rabatt", rabatt)
+		             		          .add("agbAkzeptiert", agbAkzeptiert)
+		             		          .add("adresse", getJsonBuilderFactory().createObjectBuilder()
+		                    		                  .add("plz", plz)
+		                    		                  .add("ort", ort)
+		                    		                  .add("strasse", strasse)
+		                    		                  .add("hausnr", hausnr)
+		                    		                  .build())
+		                              .build();
+
+		// When
+		final Response response = given().contentType(APPLICATION_JSON)
+				                         .body(jsonObject.toString())
+                                         .post(KUNDEN_PATH);
+		
+		// Then
+		assertThat(response.getStatusCode(), is(HTTP_UNAUTHORIZED));
+		LOGGER.finer("ENDE");
+	}
+	
 	@Test
 	public void createKunde() {
 		LOGGER.finer("BEGINN");
