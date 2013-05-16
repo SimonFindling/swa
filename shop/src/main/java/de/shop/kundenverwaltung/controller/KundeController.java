@@ -1,6 +1,7 @@
 package de.shop.kundenverwaltung.controller;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.Flash;
@@ -53,7 +54,7 @@ public class KundeController implements Serializable {
 	 */
 	@Transactional
 	public String findKundeById() {
-		final Kunde kunde = ks.findKundeById(kundeId, FetchType.NUR_KUNDE);
+		final Kunde kunde = ks.findKundeById(kundeId, FetchType.NUR_KUNDE, Locale.GERMAN);
 		if (kunde == null) {
 			flash.remove(FLASH_KUNDE);
 			return null;
