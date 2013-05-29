@@ -27,7 +27,7 @@
 					                   autocompleteMethod="#{kc.findNachnamenByPrefix}"/> 
 	
 					<a4j:commandButton id="sucheButton"
-					                   action="#{kc.findKundenByNachname}"
+					                   action="#{kc.findKundenByNachname()}"
 									   value="#{msgKv['listKunden.submit']}"
 									   render="kundenPanel fehlermeldungNachname"/>
 									   
@@ -60,7 +60,7 @@
 				                rowClasses="odd-row, even-row"
 				                styleClass="tabelleMitZebrastil"
 				                cellspacing="10"
-				                rendered="#{not empty kc.kunden or param.init ne 'true'}">
+				                rendered="#{not empty kc.kunden}">
 					
 					<rich:column id="idSpalte">
 						<f:facet name="header">

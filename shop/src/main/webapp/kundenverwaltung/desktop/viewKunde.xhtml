@@ -238,6 +238,25 @@
 						</rich:tab>
 						
 					</rich:tabPanel>
+					
+					<p id="buttons">
+						<h:panelGroup id="buttonsGroup" rendered="#{not empty kc.kunde}">
+							<h:commandButton id="updateButtonKunde"
+							                 image="#{resource['images:edit.gif']}"
+							                 action="/kundenverwaltung/updateKunde"
+							                 alt="#{msgKv['viewKunde.update.alt']}"/>
+							#{' '}
+							<h:commandButton id="deleteButton"
+											 image="#{resource['images:delete.gif']}"
+									         action="#{kc.deleteAngezeigtenKunden}"
+									         onclick="return confirm('#{msgKv['viewKunde.deleteKundeBestaetigung']}')"
+									         alt="#{msgKv['viewKunde.deleteButtonAlt']}"
+									         rendered="#{rich:isUserInRole('admin')}"/>
+							#{' '}
+							<rich:messages id="fehlermeldungDeleteButton" for="deleteButton"/>
+						</h:panelGroup>
+					</p>
+					
 				</a4j:outputPanel>
 			</h:form>
 		</ui:define>

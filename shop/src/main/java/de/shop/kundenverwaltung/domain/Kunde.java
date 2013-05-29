@@ -237,7 +237,7 @@ public class Kunde implements java.io.Serializable {
 	@Valid
 	private Adresse adresse;
 
-	@OneToOne(fetch = LAZY, cascade = { PERSIST, REMOVE })
+	@OneToOne(fetch = EAGER, cascade = { PERSIST, REMOVE })
 	@JoinColumn(name = "file_fk")
 	@JsonIgnore
 	private File file;

@@ -16,6 +16,6 @@
 	</h:panelGroup>
 
 	<h:panelGroup id="copyright">
-		<b>&#169; J&#252;rgen Zimmermann</b>
+		<b>@ {Andreas Dietz, Marco Eichsteller, Simon Findling, Elena Fol, Maik Scheske}</b>
 	</h:panelGroup>
 </ui:composition>
