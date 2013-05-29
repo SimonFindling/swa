@@ -217,7 +217,7 @@ public class Kunde implements java.io.Serializable {
 	@AssertTrue(message = "{kundenverwaltung.kunde.agb}")
 	private boolean agbAkzeptiert = true;
 
-	@OneToMany
+	@OneToMany(fetch = EAGER)
 	@JoinColumn(name = "kunde_fk", nullable = false)
 	@OrderColumn(name = "idx", nullable = false)
 	@JsonIgnore

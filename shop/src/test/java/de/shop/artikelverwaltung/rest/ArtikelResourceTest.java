@@ -15,6 +15,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.runners.MethodSorters.NAME_ASCENDING;
 
@@ -29,6 +30,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 
+import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -229,7 +231,7 @@ public class ArtikelResourceTest extends AbstractResourceTest {
                                          .post(ARTIKEL_PATH);
 		
 		// Then
-		assertThat(response.getStatusCode(), is(HTTP_INTERNAL_ERROR));
+		assertThat(response.getStatusCode(), not(HTTP_CREATED));
 		assertThat(response.asString().isEmpty(), is(false));
 
 		LOGGER.finer("ENDE");

@@ -149,10 +149,7 @@
 		<exception-type></exception-type>
 		<location>/error/defaultError.jsf</location>
 	</error-page>
-	<error-page>
-		<error-code>500</error-code>
-		<location>/error/defaultError.jsf</location>
-	</error-page>
+	
 	<error-page>
 		<exception-type>javax.faces.el.EvaluationException</exception-type>
 		<location>/error/defaultError.jsf</location>

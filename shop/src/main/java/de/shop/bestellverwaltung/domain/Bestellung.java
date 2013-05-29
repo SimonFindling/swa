@@ -12,10 +12,13 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
@@ -260,6 +263,11 @@ public class Bestellung implements java.io.Serializable {
 		this.lieferungenUri = lieferungenUri;
 	}
 
+	public String getErzeugt(String format) {
+		final Format formatter = new SimpleDateFormat(format, Locale.getDefault());
+		return formatter.format(erzeugt);
+	}
+	
 	public Date getErzeugt() {
 		return erzeugt == null ? null : (Date) erzeugt.clone();
 	}
