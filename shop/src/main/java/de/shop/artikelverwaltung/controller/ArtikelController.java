@@ -1,12 +1,14 @@
 package de.shop.artikelverwaltung.controller;
 
 import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
+import static de.shop.util.Messages.MessagesType.KUNDENVERWALTUNG;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Locale;
+import de.shop.util.Messages;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,12 +22,15 @@ import javax.servlet.http.HttpSession;
 import org.jboss.logging.Logger;
 
 import de.shop.artikelverwaltung.domain.Artikel;
+import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.artikelverwaltung.service.ArtikelValidationException;
+import de.shop.artikelverwaltung.service.InvalidArtikelException;
 import de.shop.kundenverwaltung.domain.Adresse;
 import de.shop.kundenverwaltung.domain.Kunde;
 import de.shop.kundenverwaltung.service.EmailExistsException;
 import de.shop.kundenverwaltung.service.InvalidKundeException;
+import de.shop.util.AbstractShopException;
 import de.shop.util.Client;
 import de.shop.util.Log;
 import de.shop.util.Transactional;
@@ -69,6 +74,9 @@ public class ArtikelController implements Serializable {
 	private transient HttpSession session;
 	
 	@Inject
+	private Messages messages;
+	
+	@Inject
 	@Client
 	private Locale locale;
 
@@ -81,6 +89,17 @@ public class ArtikelController implements Serializable {
 	@PreDestroy
 	private void preDestroy() {
 		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
+	}
+	
+	private String createArtikelErrorMsg(AbstractArtikelServiceException e) {
+		final Class<? extends AbstractArtikelServiceException> exceptionClass = e.getClass();
+		
+		if (exceptionClass.equals(InvalidArtikelException.class)) {
+			final InvalidArtikelException orig = (InvalidArtikelException) e;
+			messages.error(orig.getViolations(), null);
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -134,14 +153,14 @@ public class ArtikelController implements Serializable {
 	@TransactionAttribute(REQUIRED)
 	@Transactional
 	public String createArtikel() {
-		//try {
+		try {
 			neuerArtikel = as.createArtikel(neuerArtikel, locale);
 		//TODO Fehlerbehandlung implementieren
-			/*}
-		catch (ArtikelValidationException e) {
+			}
+		catch (InvalidArtikelException e) {
 			final String outcome = createArtikelErrorMsg(e);
 			return outcome;
-		}*/
+		}
 		
 		// Aufbereitung fuer viewArtikel.xhtml
 		artikelId = neuerArtikel.getId();

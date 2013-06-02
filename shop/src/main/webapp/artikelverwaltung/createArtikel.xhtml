@@ -18,6 +18,38 @@
 			<h1>
 				#{msgAv['createArtikel.heading']}
 			</h1>
-		
+			
+			<h:form id="createArtikelForm">
+				<rich:jQuery id="bezeichnungFocus" selector="#bezeichnung" query="focus()"/>
+				
+				<rich:graphValidator id="artikelValidator"
+				                     value="#{ac.neuerArtikel}">
+					<rich:messages for="artikelValidator"/>
+					<p id="abstand"/>
+					
+					<h:panelGrid id="createArtikelTabelle"
+					             columns="3">
+					<h:outputLabel id="bezeichnungLabel" for="bezeichnung" value="#{msgAv['createArtikel.bezeichnung']}"/>
+						<h:inputText id="bezeichnung" value="#{ac.neuerArtikel.bezeichnung}">
+							<rich:validator oninvalid="$(#{rich:element('bezeichnung')}).addClass('invalid')"
+                                            onvalid="$(#{rich:element('bezeichnung')}).removeClass('invalid')"/>
+						</h:inputText>
+						<rich:messages id="fehlermeldungenBezeichnung" for="bezeichnung"/>
+						
+					<h:outputLabel id="preisLabel" for="preis" value="#{msgAv['createArtikel.preis']}"/>
+						<h:inputText id="preis" value="#{ac.neuerArtikel.preis}">
+							<rich:validator oninvalid="$(#{rich:element('preis')}).addClass('invalid')"
+                                            onvalid="$(#{rich:element('preis')}).removeClass('invalid')"/>
+						</h:inputText>
+						<rich:messages id="fehlermeldungenPreis" for="preis"/>
+					</h:panelGrid>
+					<p id="buttons">
+						<h:commandButton id="createSubmit" action="#{ac.createArtikel}" value="#{msgAv['createArtikel.submit']}"/>
+						#{' '}
+						<h:commandButton id="reset" type="reset" value="#{msgAv['createArtikel.reset']}"/>
+					</p>
+				</rich:graphValidator>
+			</h:form>
+		</ui:define>
 	</ui:composition>
 </html>
