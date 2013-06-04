@@ -244,7 +244,8 @@
 							<h:commandButton id="updateButtonKunde"
 							                 image="#{resource['images:edit.gif']}"
 							                 action="/kundenverwaltung/updateKunde"
-							                 alt="#{msgKv['viewKunde.update.alt']}"/>
+							                 alt="#{msgKv['viewKunde.update.alt']}"
+							                 rendered="#{rich:isUserInRole('admin')}"/>
 							#{' '}
 							<h:commandButton id="deleteButton"
 											 image="#{resource['images:delete.gif']}"

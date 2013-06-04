@@ -45,19 +45,17 @@
 				<p id="abstand1"/>
 			
 				<a4j:outputPanel id="artikelPanel">
-					<c:if test="#{not empty flash.artikel or param.init ne 'true'}">
-						<c:set var="artikel" value="#{flash.artikel}" scope="view"/>
-						<c:set target="#{flash}" property="artikel" value="#{artikel}"/>
+					<c:if test="#{not empty ac.artikelNachBez or param.init ne 'true'}">
 						
 						<rich:dataTable id="artikelTabelle"
-						                value="#{artikel}"
+						                value="#{ac.artikelNachBez}"
 						                var="art"
 						                rows="5"
 						                noDataLabel="#{msgAv['listArtikel.keineDaten']}"
 						                rowClasses="odd-row, even-row"
 						                styleClass="tabelleMitZebrastil"
 						                cellspacing="10"
-						                rendered="#{not empty artikel or param.init ne 'true'}">
+						                rendered="#{not empty ac.artikelNachBez or param.init ne 'true'}">
 							<rich:column id="idSpalte">
 								<f:facet name="header">
 									#{msgAv['listArtikel.id']}
@@ -72,12 +70,28 @@
 								#{art.bezeichnung}
 							</rich:column>
 							
+							<rich:column id="preisSpalte">
+								<f:facet name="header">
+									#{msgAv['listArtikel.preis']}
+								</f:facet>
+								#{art.preis}
+							</rich:column>
+							
 							<rich:column id="buttonSpalte"
-							             rendered="#{not empty artikel}">
+							             rendered="#{not empty ac.artikelNachBez}">
 								<h:commandButton id="warenkorbButton"
 												 image="#{resource['images:warenkorb.gif']}"
 										         action="#{wk.add(art)}"
 										         alt="#{msgAv['listArtikel.alt.warenkorb']}"/>
+							</rich:column>
+							
+							<rich:column id="updateSpalte"
+							             rendered="#{not empty ac.artikelNachBez}">
+								<h:commandButton id="updateButton"
+												 image="#{resource['images:edit.gif']}"
+										         action="#{ac.selectForUpdate(art)}"
+										         alt="#{msgAv['listArtikel.alt.update']}"
+										         rendered="#{rich:isUserInRole('admin')}"/>
 							</rich:column>
 						</rich:dataTable>
 						
@@ -85,7 +99,7 @@
 						<rich:dataScroller id="dataScroller"
 						                   for="artikelTabelle"
 						                   maxPages="10"
-						                   rendered="#{not empty artikel}"/>
+						                   rendered="#{not empty ac.artikelNachBez}"/>
 						
 						<a4j:outputPanel id="outputPanelZebra" ajaxRendered="true">
 							<rich:jQuery id="odd"

@@ -1,6 +1,8 @@
 package de.shop.artikelverwaltung.controller;
 
 import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
+import static de.shop.util.Constants.JSF_INDEX;
+import static de.shop.util.Messages.MessagesType.KUNDENVERWALTUNG;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
@@ -8,13 +10,17 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Locale;
 
+import de.shop.util.Messages;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.Flash;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.logging.Logger;
@@ -22,10 +28,17 @@ import org.jboss.logging.Logger;
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
+import de.shop.artikelverwaltung.service.ArtikelValidationException;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
+import de.shop.auth.controller.AuthController;
+import de.shop.kundenverwaltung.domain.Adresse;
+import de.shop.kundenverwaltung.domain.Kunde;
+import de.shop.kundenverwaltung.service.EmailExistsException;
+import de.shop.kundenverwaltung.service.InvalidKundeException;
+import de.shop.util.AbstractShopException;
 import de.shop.util.Client;
+import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.Log;
-import de.shop.util.Messages;
 import de.shop.util.Transactional;
 
 
@@ -43,6 +56,7 @@ public class ArtikelController implements Serializable {
 	private static final String JSF_ARTIKELVERWALTUNG = "/artikelverwaltung/";
 	private static final String JSF_LIST_ARTIKEL = "/artikelverwaltung/listArtikel";
 	private static final String JSF_VIEW_ARTIKEL = JSF_ARTIKELVERWALTUNG + "viewArtikel"; 
+	private static final String JSF_UPDATE_ARTIKEL = JSF_ARTIKELVERWALTUNG + "updateArtikel";
 	private static final String FLASH_ARTIKEL = "artikel";
 	private static final int ANZAHL_LADENHUETER = 5;
 	
@@ -56,6 +70,7 @@ public class ArtikelController implements Serializable {
 	private Long artikelId;
 	
 	private List<Artikel> ladenhueter;
+	private List<Artikel> artikelNachBez;
 
 	@Inject
 	private ArtikelService as;
@@ -72,6 +87,9 @@ public class ArtikelController implements Serializable {
 	@Inject
 	@Client
 	private Locale locale;
+
+	@Inject
+	private AuthController auth;
 
 	
 	@PostConstruct
@@ -122,12 +140,48 @@ public class ArtikelController implements Serializable {
 
 	@Transactional
 	public String findArtikelByBezeichnung() {
-		final List<Artikel> artikel = as.findArtikelByBezeichnung(bezeichnung);
-		flash.put(FLASH_ARTIKEL, artikel);
+		artikelNachBez = as.findArtikelByBezeichnung(bezeichnung);
 
 		return JSF_LIST_ARTIKEL;
 	}
+
+	public String selectForUpdate(Artikel ausgewählterArtikel) {
+		artikel = ausgewählterArtikel;
+		
+		return JSF_UPDATE_ARTIKEL;
+	}
 	
+	@TransactionAttribute(REQUIRED)
+	@Transactional
+	public String updateArtikel() {
+		
+		if (artikel == null) {
+			return JSF_INDEX;
+		}
+		
+		LOGGER.tracef("Aktualisierter Artikel: %s", artikel);
+		try {
+			artikel = as.updateArtikel(artikel, locale);
+		}
+		catch (OptimisticLockException | ConcurrentDeletedException e) {
+			final String outcome = "konkurrierendes Update";
+			return outcome;
+		}
+		
+		return JSF_INDEX;
+	}
+	
+	public Artikel getArtikel() {
+		return artikel;
+	}
+
+	public void setArtikel(Artikel artikel) {
+		this.artikel = artikel;
+	}
+
+	public List<Artikel> getArtikelNachBez() {
+		return artikelNachBez;
+	}
 
 	@Transactional
 	public void loadLadenhueter() {
