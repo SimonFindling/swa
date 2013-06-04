@@ -92,7 +92,7 @@ public class KundeController implements Serializable {
 	private static final String CLIENT_ID_UPDATE_PASSWORD = "updateKundeForm:password";
 	private static final String CLIENT_ID_UPDATE_EMAIL = "updateKundeForm:email";
 	
-	private static final Class<?>[] PASSWORD_GROUP = { PasswordGroup.class };
+	private static final Class<?>[] PASSWORD_GROUP = {PasswordGroup.class };
 
 		
 	@PersistenceContext(type = EXTENDED)
@@ -272,13 +272,13 @@ public class KundeController implements Serializable {
 			return null;
 		}
 		
-		List<Kunde> kundenPrefix = ks.findKundenByIdPrefix(id);
+		final List<Kunde> kundenPrefix = ks.findKundenByIdPrefix(id);
 		if (kundenPrefix == null || kundenPrefix.isEmpty()) {
 			findKundeByIdErrorMsg(idPrefix);
 			return null;
 		}
 		
-		List<Long> ids = new ArrayList<>();
+		final List<Long> ids = new ArrayList<>();
 		for (Kunde k : kundenPrefix) {
 			ids.add(k.getId());
 		}

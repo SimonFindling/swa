@@ -8,7 +8,6 @@ import static de.shop.util.TestConstants.ARTIKEL_PATH;
 import static de.shop.util.TestConstants.LOCATION;
 import static de.shop.util.TestConstants.ARTIKEL_BEZ_PATH_PARAM;
 import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -30,7 +29,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 
-import org.hamcrest.CoreMatchers;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
