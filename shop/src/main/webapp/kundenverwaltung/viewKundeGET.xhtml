@@ -41,7 +41,7 @@
 				
 				<h:outputText id="emailLabel" value="#{msgKv['viewKundeGET.email']}"/>
 				<h:outputText id="email" value="#{kc.kunde.email}"/>
-					
+							
 				<h:outputText id="rabattLabel" value="#{msgKv['viewKundeGET.rabatt']}"/>
 				<h:outputText id="rabatt" value="#{kc.kunde.rabatt}">
 					<f:convertNumber type="percent" maxFractionDigits="2"/>
@@ -70,7 +70,7 @@
 			</h:panelGrid>
 						
 			<h:form id="buttons" rendered="#{not empty kc.kunde}">
-				<h:commandButton id="updateButton"
+				<h:commandButton id="updateButtonKunde"
 				                 image="#{resource['images/edit.gif']}"
 				                 action="/kundenverwaltung/updateKunde"
 				                 alt="#{msgKv['viewKundeGET.update.alt']}"/>

@@ -218,6 +218,10 @@ public class KundeController implements Serializable {
 	public String getNachname() {
 		return nachname;
 	}
+	
+	public void setNachname(String nachname) {
+		this.nachname = nachname;
+	}
 
 	public Kunde getKunde() {
 		return kunde;
@@ -300,7 +304,7 @@ public class KundeController implements Serializable {
 		if (nachnamen.size() > MAX_AUTOCOMPLETE) {
 			return nachnamen.subList(0, MAX_AUTOCOMPLETE);
 		}
-
+		LOGGER.debugf("Nachname: %s", nachname);
 		return nachnamen;
 	}
 	
@@ -315,14 +319,12 @@ public class KundeController implements Serializable {
 	}
 	
 	@TransactionAttribute(REQUIRED)
-	@Transactional
 	public String findKundenByNachname() {
-		LOGGER.debugf("Nachname: Suche {0}", nachname);
 		if (nachname == null || nachname.isEmpty()) {
 			kunden = ks.findAllKunden(FetchType.MIT_BESTELLUNGEN, OrderByType.UNORDERED);
 			return JSF_LIST_KUNDEN;
 		}
-	
+
 		try {
 			kunden = ks.findKundenByNachname(nachname, FetchType.MIT_BESTELLUNGEN, locale);
 		}
@@ -331,7 +333,6 @@ public class KundeController implements Serializable {
 			messages.error(violations, CLIENT_ID_KUNDEN_NACHNAME);
 			return null;
 		}
-		LOGGER.debugf("Ergebnisse: {0}", kunden.size());
 		return JSF_LIST_KUNDEN;
 	}
 

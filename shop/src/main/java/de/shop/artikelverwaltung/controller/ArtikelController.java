@@ -1,8 +1,7 @@
 package de.shop.artikelverwaltung.controller;
 
-import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
 import static de.shop.util.Constants.JSF_INDEX;
-import static de.shop.util.Messages.MessagesType.KUNDENVERWALTUNG;
+import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
@@ -10,14 +9,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Locale;
 
-import de.shop.util.Messages;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.Flash;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.OptimisticLockException;
@@ -28,17 +25,12 @@ import org.jboss.logging.Logger;
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
-import de.shop.artikelverwaltung.service.ArtikelValidationException;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
 import de.shop.auth.controller.AuthController;
-import de.shop.kundenverwaltung.domain.Adresse;
-import de.shop.kundenverwaltung.domain.Kunde;
-import de.shop.kundenverwaltung.service.EmailExistsException;
-import de.shop.kundenverwaltung.service.InvalidKundeException;
-import de.shop.util.AbstractShopException;
 import de.shop.util.Client;
 import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.Log;
+import de.shop.util.Messages;
 import de.shop.util.Transactional;
 
 
@@ -57,7 +49,6 @@ public class ArtikelController implements Serializable {
 	private static final String JSF_LIST_ARTIKEL = "/artikelverwaltung/listArtikel";
 	private static final String JSF_VIEW_ARTIKEL = JSF_ARTIKELVERWALTUNG + "viewArtikel"; 
 	private static final String JSF_UPDATE_ARTIKEL = JSF_ARTIKELVERWALTUNG + "updateArtikel";
-	private static final String FLASH_ARTIKEL = "artikel";
 	private static final int ANZAHL_LADENHUETER = 5;
 	
 	private static final String JSF_SELECT_ARTIKEL = "/artikelverwaltung/selectArtikel";
@@ -67,7 +58,8 @@ public class ArtikelController implements Serializable {
 	private Artikel neuerArtikel;
 
 	private String bezeichnung;
-	private Long artikelId;
+	
+	private boolean geaendertArtikel;
 	
 	private List<Artikel> ladenhueter;
 	private List<Artikel> artikelNachBez;
@@ -209,11 +201,6 @@ public class ArtikelController implements Serializable {
 			return outcome;
 		}
 		
-		// Aufbereitung fuer viewArtikel.xhtml
-		artikelId = neuerArtikel.getId();
-		artikel = neuerArtikel;
-		neuerArtikel = null;  // zuruecksetzen
-		
 		return JSF_VIEW_ARTIKEL + JSF_REDIRECT_SUFFIX;
 	}
 	
@@ -226,5 +213,22 @@ public class ArtikelController implements Serializable {
 		final List<Artikel> alleArtikel = as.findVerfuegbareArtikel();
 		session.setAttribute(SESSION_VERFUEGBARE_ARTIKEL, alleArtikel);
 		return JSF_SELECT_ARTIKEL;
+	}
+	
+	public void geaendert(ValueChangeEvent e) {
+		if (geaendertArtikel) {
+			return;
+		}
+		
+		if (e.getOldValue() == null) {
+			if (e.getNewValue() != null) {
+				geaendertArtikel = true;
+			}
+			return;
+		}
+
+		if (!e.getOldValue().equals(e.getNewValue())) {
+			geaendertArtikel = true;				
+		}
 	}
 }

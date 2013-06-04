@@ -15,7 +15,7 @@
 	<ui:define name="article">
 		<h:form id="form">
 			<rich:panel id="suchePanel" header="#{msgKv['listKunden.sucheNeu']}">
-				<h:panelGrid id="sucheGrid" columns="4">
+		<h:panelGrid id="sucheGrid" columns="4">
 					<h:outputLabel id="nachnameLabel"
 					               value="#{msgKv['listKunden.nachname']}"
 					               for="nachname"/>
@@ -60,7 +60,7 @@
 				                rowClasses="odd-row, even-row"
 				                styleClass="tabelleMitZebrastil"
 				                cellspacing="10"
-				                rendered="#{not empty kc.kunden}">
+				                rendered="#{not empty kc.kunden or param.init ne 'true'}">
 					
 					<rich:column id="idSpalte">
 						<f:facet name="header">
@@ -171,7 +171,7 @@
 						</h:button>
 					</rich:column>
 									
-					<rich:column id="editSpalte" rendered="#{not empty kc.kunden}">
+					<rich:column id="editSpalte" rendered="#{not empty kc.kunden and rich:isUserInRole('admin')}">
 						<h:commandButton id="editButton"
 										 image="#{resource['images:edit.gif']}"
 								         action="#{kc.selectForUpdate(kunde)}"
