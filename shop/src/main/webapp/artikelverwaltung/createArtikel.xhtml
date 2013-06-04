@@ -44,6 +44,14 @@
 						<rich:messages id="fehlermeldungenPreis" for="preis"/>
 					</h:panelGrid>
 					<p id="buttons">
+					
+					<h:outputText id="verfuegbarLabel" value="#{msgAv['createArtikel.verfuegbar']}"/>
+						<h:selectOneRadio id="verfuegbar" value="#{ac.neuerArtikel.verfuegbar}">
+							<f:selectItem id="erhaeltlich" itemValue="true" itemLabel="#{msgAv['createArtikel.verfuegbar.erhaeltlich']}"/>
+							<f:selectItem id="nichtErhaeltlich" itemValue="false" itemLabel="#{msgAv['createArtikel.verfuegbar.nichtErhaeltlich']}"/>
+						</h:selectOneRadio>
+						<f:verbatim/>
+						
 						<h:commandButton id="createSubmit" action="#{ac.createArtikel}" value="#{msgAv['createArtikel.submit']}"/>
 						#{' '}
 						<h:commandButton id="reset" type="reset" value="#{msgAv['createArtikel.reset']}"/>
