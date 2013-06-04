@@ -1,19 +1,17 @@
 package de.shop.artikelverwaltung.controller;
 
 import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
-import static de.shop.util.Messages.MessagesType.KUNDENVERWALTUNG;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Locale;
-import de.shop.util.Messages;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.Flash;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,15 +22,10 @@ import org.jboss.logging.Logger;
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
-import de.shop.artikelverwaltung.service.ArtikelValidationException;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
-import de.shop.kundenverwaltung.domain.Adresse;
-import de.shop.kundenverwaltung.domain.Kunde;
-import de.shop.kundenverwaltung.service.EmailExistsException;
-import de.shop.kundenverwaltung.service.InvalidKundeException;
-import de.shop.util.AbstractShopException;
 import de.shop.util.Client;
 import de.shop.util.Log;
+import de.shop.util.Messages;
 import de.shop.util.Transactional;
 
 
@@ -40,7 +33,7 @@ import de.shop.util.Transactional;
  * Dialogsteuerung fuer die ArtikelService
  */
 @Named("ac")
-@RequestScoped
+@SessionScoped
 @Log
 public class ArtikelController implements Serializable {
 	private static final long serialVersionUID = 1564024850446471639L;
