@@ -2,10 +2,12 @@ package de.shop.artikelverwaltung.controller;
 
 import static de.shop.util.Constants.JSF_INDEX;
 import static de.shop.util.Constants.JSF_REDIRECT_SUFFIX;
+import static de.shop.util.Messages.MessagesType.ARTIKELVERWALTUNG;
 import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -13,20 +15,26 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Event;
 import javax.faces.context.Flash;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolation;
 
 import org.jboss.logging.Logger;
+import org.richfaces.cdi.push.Push;
 
 import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
 import de.shop.auth.controller.AuthController;
+import de.shop.kundenverwaltung.domain.Kunde;
+import de.shop.kundenverwaltung.service.EmailExistsException;
+import de.shop.kundenverwaltung.service.InvalidKundeException;
 import de.shop.util.Client;
 import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.Log;
@@ -53,6 +61,8 @@ public class ArtikelController implements Serializable {
 	
 	private static final String JSF_SELECT_ARTIKEL = "/artikelverwaltung/selectArtikel";
 	private static final String SESSION_VERFUEGBARE_ARTIKEL = "verfuegbareArtikel";
+	private static final String MSG_KEY_UPDATE_ARTIKEL_CONCURRENT_UPDATE = "updateArtikel.concurrentUpdate";
+	private static final String MSG_KEY_UPDATE_ARTIKEL_CONCURRENT_DELETE = "updateArtikel.concurrentDelete";
 	
 	private Artikel artikel;
 	private Artikel neuerArtikel;
@@ -69,6 +79,10 @@ public class ArtikelController implements Serializable {
 	
 	@Inject
 	private Flash flash;
+	
+	@Inject
+	@Push(topic = "updateArtikel")
+	private transient Event<String> updateArtikelEvent;
 	
 	@Inject
 	private transient HttpSession session;
@@ -102,6 +116,20 @@ public class ArtikelController implements Serializable {
 			messages.error(orig.getViolations(), null);
 		}
 		
+		return null;
+	}
+	
+	private String updateErrorMsg(RuntimeException e, Class<? extends Artikel> artikelClass) {
+		final Class<? extends RuntimeException> exceptionClass = e.getClass();
+		
+		if (exceptionClass.equals(OptimisticLockException.class)) {
+			messages.error(ARTIKELVERWALTUNG, MSG_KEY_UPDATE_ARTIKEL_CONCURRENT_UPDATE, null);
+			
+		}
+		else if (exceptionClass.equals(ConcurrentDeletedException.class)) {
+			messages.error(ARTIKELVERWALTUNG, MSG_KEY_UPDATE_ARTIKEL_CONCURRENT_DELETE, null);
+			
+		}
 		return null;
 	}
 	
@@ -156,9 +184,11 @@ public class ArtikelController implements Serializable {
 			artikel = as.updateArtikel(artikel, locale);
 		}
 		catch (OptimisticLockException | ConcurrentDeletedException e) {
-			final String outcome = "konkurrierendes Update";
+			final String outcome = updateErrorMsg(e, artikel.getClass());
 			return outcome;
 		}
+		
+		updateArtikelEvent.fire(String.valueOf(artikel.getId()));
 		
 		return JSF_INDEX;
 	}

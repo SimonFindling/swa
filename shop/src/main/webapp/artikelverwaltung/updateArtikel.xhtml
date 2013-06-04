@@ -5,7 +5,8 @@
 	  xmlns:ui="http://java.sun.com/jsf/facelets"
 	  xmlns:h="http://java.sun.com/jsf/html"
 	  xmlns:f="http://java.sun.com/jsf/core"
-	  xmlns:rich="http://richfaces.org/rich">
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:a4j="http://richfaces.org/a4j">
 	  
 	 <ui:composition template="/WEB-INF/templates/desktop/main.xml">
 		<ui:define name="metadata"/>
@@ -22,6 +23,10 @@
 			              value="#{msgKv['updateArtikel.keinArtikel']}"
 			              class="rf-msg-err"
 			              rendered="#{empty ac.artikel}"/>
+			              
+			 <a4j:push id="updateEvent" address="updateArtikel"
+		              ondataavailable="if (event.rf.data == '#{ac.artikel.id}') { $('#updateMessage').html('&lt;span class=rf-msg-err&gt;#{msgAv['updateArtikel.concurrentUpdate']}&lt;/span&gt;') }"/>
+			<span id="updateMessage"></span>
 			
 			<h:form id="updateArtikelForm" rendered="#{not empty ac.artikel}">
 				<rich:jQuery id="bezeichnungFocus" selector="#bezeichnung" query="focus()"/>
