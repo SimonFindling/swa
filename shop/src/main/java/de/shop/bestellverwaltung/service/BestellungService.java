@@ -2,7 +2,9 @@ package de.shop.bestellverwaltung.service;
 
 
 import static de.shop.util.Constants.KEINE_ID;
+
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +43,8 @@ import de.shop.util.ValidatorProvider;
 @Log
 public class BestellungService  implements Serializable {
 	private static final long serialVersionUID = -5816249017416603515L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
+
 	
 	public enum FetchType {
 		NUR_BESTELLUNG,
@@ -49,9 +53,6 @@ public class BestellungService  implements Serializable {
 	
 	@PersistenceContext
 	private transient EntityManager em;
-	
-	@Inject
-	private Logger logger;
 	
 	@Inject
 	private KundeService ks;
@@ -65,12 +66,12 @@ public class BestellungService  implements Serializable {
 	
 	@PostConstruct
 	private void postConstruct() {
-		logger.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
 	}
 	
 	@PreDestroy
 	private void preDestroy() {
-		logger.debugf("CDI-faehiges Bean %s wird geloescht", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
 	}
 	
 	

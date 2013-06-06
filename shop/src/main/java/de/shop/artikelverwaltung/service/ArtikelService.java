@@ -3,6 +3,7 @@ package de.shop.artikelverwaltung.service;
 import static de.shop.util.Constants.KEINE_ID;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -36,24 +37,25 @@ import de.shop.util.ValidatorProvider;
 @Log
 public class ArtikelService implements Serializable {
 	private static final long serialVersionUID = 49275120333563509L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 
+	
 	@PersistenceContext
 	private transient EntityManager em;
 	
-	@Inject
-	private Logger logger;
+	
 	
 	@Inject
 	private ValidatorProvider validatorProvider;
 	
 	@PostConstruct
 	private void postConstruct() {
-		logger.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
 	}
 	
 	@PreDestroy
 	private void preDestroy() {
-		logger.debugf("CDI-faehiges Bean %s wird geloescht", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
 	}
 	
 	private void validateArtikel(Artikel artikel, Locale locale, Class<?>... groups) {

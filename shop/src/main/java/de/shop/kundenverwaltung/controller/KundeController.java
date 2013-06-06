@@ -163,7 +163,7 @@ public class KundeController implements Serializable {
 		return null;
 	}
 	
-	private String updateErrorMsg(RuntimeException e, Class<? extends Kunde> kundeClass) {
+	private String updateErrorMsg(RuntimeException e) {
 		final Class<? extends RuntimeException> exceptionClass = e.getClass();
 		if (exceptionClass.equals(InvalidKundeException.class)) {
 			// Ungueltiges Password: Attribute wurden bereits von JSF validiert
@@ -488,7 +488,7 @@ public class KundeController implements Serializable {
 		}
 		catch (EmailExistsException | InvalidKundeException
 			  | OptimisticLockException | ConcurrentDeletedException e) {
-			final String outcome = updateErrorMsg(e, kunde.getClass());
+			final String outcome = updateErrorMsg(e);
 			return outcome;
 		}
 

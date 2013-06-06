@@ -15,7 +15,6 @@ import javax.annotation.PreDestroy;
 import javax.ejb.TransactionAttribute;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
-import javax.faces.context.Flash;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,7 +27,6 @@ import de.shop.artikelverwaltung.domain.Artikel;
 import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
-import de.shop.auth.controller.AuthController;
 import de.shop.util.Client;
 import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.Log;
@@ -71,8 +69,6 @@ public class ArtikelController implements Serializable {
 	@Inject
 	private ArtikelService as;
 	
-	@Inject
-	private Flash flash;
 	
 	@Inject
 	@Push(topic = "updateArtikel")
@@ -88,8 +84,7 @@ public class ArtikelController implements Serializable {
 	@Client
 	private Locale locale;
 
-	@Inject
-	private AuthController auth;
+
 
 	
 	@PostConstruct
@@ -113,7 +108,7 @@ public class ArtikelController implements Serializable {
 		return null;
 	}
 	
-	private String updateErrorMsg(RuntimeException e, Class<? extends Artikel> artikelClass) {
+	private String updateErrorMsg(RuntimeException e) {
 		final Class<? extends RuntimeException> exceptionClass = e.getClass();
 		
 		if (exceptionClass.equals(OptimisticLockException.class)) {
@@ -159,8 +154,8 @@ public class ArtikelController implements Serializable {
 		return JSF_LIST_ARTIKEL;
 	}
 
-	public String selectForUpdate(Artikel ausgewählterArtikel) {
-		artikel = ausgewählterArtikel;
+	public String selectForUpdate(Artikel ausgewaehlterArtikel) {
+		artikel = ausgewaehlterArtikel;
 		
 		return JSF_UPDATE_ARTIKEL;
 	}
@@ -178,7 +173,7 @@ public class ArtikelController implements Serializable {
 			artikel = as.updateArtikel(artikel, locale);
 		}
 		catch (OptimisticLockException | ConcurrentDeletedException e) {
-			final String outcome = updateErrorMsg(e, artikel.getClass());
+			final String outcome = updateErrorMsg(e);
 			return outcome;
 		}
 		
@@ -218,7 +213,6 @@ public class ArtikelController implements Serializable {
 	public String createArtikel() {
 		try {
 			neuerArtikel = as.createArtikel(neuerArtikel, locale);
-		//TODO Fehlerbehandlung implementieren
 			}
 		catch (InvalidArtikelException e) {
 			final String outcome = createArtikelErrorMsg(e);

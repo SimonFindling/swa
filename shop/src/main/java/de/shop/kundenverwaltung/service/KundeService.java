@@ -1,7 +1,9 @@
 package de.shop.kundenverwaltung.service;
 
 import static de.shop.util.Constants.KEINE_ID;
+
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +49,7 @@ import de.shop.util.ValidatorProvider;
 @Log
 public class KundeService implements Serializable {
 	private static final long serialVersionUID = 3692819050477194655L;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 	
 	public enum FetchType {
 		NUR_KUNDE,
@@ -63,9 +66,6 @@ public class KundeService implements Serializable {
 	private transient EntityManager em;
 	
 	@Inject
-	private transient Logger logger;
-	
-	@Inject
 	private ValidatorProvider validatorProvider;
 	
 	@Inject
@@ -80,12 +80,12 @@ public class KundeService implements Serializable {
 	
 	@PostConstruct
 	private void postConstruct() {
-		logger.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wurde erzeugt", this);
 	}
 	
 	@PreDestroy
 	private void preDestroy() {
-		logger.debugf("CDI-faehiges Bean %s wird geloescht", this);
+		LOGGER.debugf("CDI-faehiges Bean %s wird geloescht", this);
 	}
 	
 	private void validateKunde(Kunde kunde, Locale locale, Class<?>... groups) {
@@ -149,18 +149,18 @@ public class KundeService implements Serializable {
 	}
 
 	private void passwordVerschluesseln(Kunde kunde) {
-		logger.debugf("passwordVerschluesseln BEGINN: %s", kunde);
+		LOGGER.debugf("passwordVerschluesseln BEGINN: %s", kunde);
 	
 		final String unverschluesselt = kunde.getPassword();
 		final String verschluesselt = authService.verschluesseln(unverschluesselt);
 		kunde.setPassword(verschluesselt);
 		kunde.setPasswordWdh(verschluesselt);
 	
-		logger.debugf("passwordVerschluesseln ENDE: %s", verschluesselt);
+		LOGGER.debugf("passwordVerschluesseln ENDE: %s", verschluesselt);
 	}
 
 	private boolean hasBestellungen(Kunde kunde) {
-		logger.debugf("hasBestellungen BEGINN: %s", kunde);
+		LOGGER.debugf("hasBestellungen BEGINN: %s", kunde);
 		
 		boolean result = false;
 		
@@ -170,7 +170,7 @@ public class KundeService implements Serializable {
 			result = true;
 		}
 		
-		logger.debugf("hasBestellungen ENDE: %s", result);
+		LOGGER.debugf("hasBestellungen ENDE: %s", result);
 		return result;
 	}
 

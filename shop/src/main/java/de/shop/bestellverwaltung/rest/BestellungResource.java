@@ -27,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 import org.jboss.logging.Logger;
 
 import de.shop.artikelverwaltung.domain.Artikel;
-import de.shop.artikelverwaltung.rest.UriHelperArtikel;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.bestellverwaltung.domain.Bestellposition;
 import de.shop.bestellverwaltung.domain.Bestellung;
@@ -72,9 +71,6 @@ public class BestellungResource {
 	
 	@Inject
 	private UriHelperKunde uriHelperKunde;
-	
-	@Inject
-	private UriHelperArtikel uriHelperArtikel;
 	
 	@Inject
 	private LocaleHelper localeHelper;

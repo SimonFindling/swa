@@ -3,6 +3,7 @@ package de.shop.mail;
 import static javax.ejb.TransactionAttributeType.SUPPORTS;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.invoke.MethodHandles;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -33,9 +34,7 @@ import de.shop.util.Log;
 @Log
 public class KundeObserver {
 	private static final String NEWLINE = System.getProperty("line.separator");
-	
-	@Inject
-	private Logger logger;
+	private static final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass());
 	
 	@Resource(lookup = "java:jboss/mail/Default")
 	private transient Session mailSession;
@@ -57,11 +56,11 @@ public class KundeObserver {
 		empfaengerName = config.getEmpfaengerName();
 		
 		if (absenderMail == null || empfaengerMail == null) {
-			logger.warn("Absender oder Empfaenger fuer Markteting-Emails sind nicht gesetzt.");
+			LOGGER.warn("Absender oder Empfaenger fuer Markteting-Emails sind nicht gesetzt.");
 			return;
 		}
-		logger.infof("Absender fuer Markteting-Emails: %s", absenderMail);
-		logger.infof("Empfaenger fuer Markteting-Emails: %s", empfaengerMail);
+		LOGGER.infof("Absender fuer Markteting-Emails: %s", absenderMail);
+		LOGGER.infof("Empfaenger fuer Markteting-Emails: %s", empfaengerMail);
 	}
 	
 	// Loose Kopplung durch @Observes, d.h. ohne JMS
@@ -104,7 +103,7 @@ public class KundeObserver {
 			Transport.send(message);
 		}
 		catch (MessagingException | UnsupportedEncodingException e) {
-			logger.error(e.getMessage());
+			LOGGER.error(e.getMessage());
 			return;
 		}
 	}
