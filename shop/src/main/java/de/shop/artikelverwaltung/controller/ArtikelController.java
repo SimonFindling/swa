@@ -7,7 +7,6 @@ import static javax.ejb.TransactionAttributeType.REQUIRED;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,8 +21,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolation;
-
 import org.jboss.logging.Logger;
 import org.richfaces.cdi.push.Push;
 
@@ -32,9 +29,6 @@ import de.shop.artikelverwaltung.service.AbstractArtikelServiceException;
 import de.shop.artikelverwaltung.service.ArtikelService;
 import de.shop.artikelverwaltung.service.InvalidArtikelException;
 import de.shop.auth.controller.AuthController;
-import de.shop.kundenverwaltung.domain.Kunde;
-import de.shop.kundenverwaltung.service.EmailExistsException;
-import de.shop.kundenverwaltung.service.InvalidKundeException;
 import de.shop.util.Client;
 import de.shop.util.ConcurrentDeletedException;
 import de.shop.util.Log;
