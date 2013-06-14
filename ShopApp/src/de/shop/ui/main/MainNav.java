@@ -79,8 +79,8 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 			navList.add(navItem);
 		}
 		
-		final ListAdapter listAdapter = new SimpleAdapter(getActivity(), navList, R.layout.nav_item, FROM, TO);
-		return listAdapter;
+		final SimpleAdapter adapter = new SimpleAdapter(getActivity(), navList, R.layout.nav_item, FROM, TO);
+		return adapter;
     }
 	
 	@Override

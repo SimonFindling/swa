@@ -26,6 +26,14 @@ public class Main extends Activity implements OnClickListener {
 		getFragmentManager().beginTransaction()
         .add(R.id.details, new Startseite())
         .commit();
+		
+		final Fragment navFragment = getFragmentManager().findFragmentById(R.id.nav);
+        final Class<? extends Activity> mainActivity = navFragment == null || !navFragment.isInLayout()
+        		                                       ? MainSmartphone.class
+        		                                       : MainTablet.class;
+        
+		final Intent intent = new Intent(this, mainActivity);
+		startActivity(intent);
     }
     
 	@Override // OnClickListener

@@ -37,5 +37,27 @@
     	android:layout_weight="4"
     	android:layout_width="0dp"
     	android:layout_height="match_parent" />
+	
+	<TableRow >
+	    
+	    <Button
+			android:id="@+id/btn_kunden"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:drawableTop="@drawable/ic_kunden"
+			android:text="@string/s_nav_kunden"
+			android:minWidth="120dp"
+			android:minHeight="62dp" />
+	    
+	    <Button
+			android:id="@+id/btn_bestellungen"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:drawableTop="@drawable/ic_bestellungen"
+			android:text="@string/s_nav_bestellungen"
+			android:minWidth="120dp"
+			android:minHeight="62dp" />
+	    
+	</TableRow>
 
 </LinearLayout>
