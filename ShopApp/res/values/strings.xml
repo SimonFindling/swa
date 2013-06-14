@@ -7,5 +7,6 @@
     <string name="s_hallo">Hello!</string>
 	<string name="s_nav_kunden">Customers</string>
 	<string name="s_nav_bestellungen">Orders</string>
+	<string name="s_desc_icon">Icon for the navigation item</string>
     	
 </resources>

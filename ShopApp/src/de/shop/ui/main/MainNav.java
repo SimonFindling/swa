@@ -42,19 +42,46 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 	
 	private static final String LOG_TAG = MainNav.class.getSimpleName();
 	
+	private static final String ICON = "icon";
+	private static final String TEXT = "text";
+	private static final String[] FROM = { ICON, TEXT };
+	private static final int[] TO = { R.id.nav_icon, R.id.nav_text };
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final String[] values = { getString(R.string.s_nav_kunden), getString(R.string.s_nav_bestellungen) };
-		// ArrayAdapter erstellt eine Liste von TextView-Elementen
-        final ListAdapter listAdapter = new ArrayAdapter<String>(getActivity(),
-																 // <android-sdk>\platforms\android-16\data\res\layout\simple_list_item_1.xml
-                                                                 android.R.layout.simple_list_item_1,
-                                                                 android.R.id.text1,
-                                                                 values);
+		final ListAdapter listAdapter = createListAdapter();        
         setListAdapter(listAdapter);
         
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
+	
+	private ListAdapter createListAdapter() {
+		final NavType[] navValues = NavType.values();
+		final List<Map<String, Object>> navList = new ArrayList<Map<String, Object>>(navValues.length);
+		
+		for (NavType nav : navValues) {
+			final Map<String, Object> navItem = new HashMap<String, Object>(FROM.length, 1); // max 2 Eintraege, bis zu 100 % Fuellung
+			switch (nav) {
+				case KUNDEN:
+					navItem.put(ICON, R.drawable.ic_kunden);
+					navItem.put(TEXT, getString(R.string.s_nav_kunden));
+					break;
+				
+				case BESTELLUNGEN:
+					navItem.put(ICON, R.drawable.ic_bestellungen);
+					navItem.put(TEXT, getString(R.string.s_nav_bestellungen));
+					break;
+					
+				default:
+					Log.e(LOG_TAG, nav.toString() + " wird nicht in die Navigationsleiste eingetragen");
+					continue;
+			}
+			navList.add(navItem);
+		}
+		
+		final ListAdapter listAdapter = new SimpleAdapter(getActivity(), navList, R.layout.nav_item, FROM, TO);
+		return listAdapter;
+    }
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -70,7 +97,6 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 		// itemPosition: Textposition innerhalb der Liste mit Zaehlung ab 0
 		// itemId = itemPosition bei String-Arrays bzw. = Primaerschluessel bei Listen aus einer DB
 		
-		Log.d(LOG_TAG, "itemPosition = " + itemPosition);
 		Fragment neuesFragment;
 		switch (NavType.valueOf(itemPosition)) {
 			case KUNDEN:
@@ -80,6 +106,7 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 			case BESTELLUNGEN:
 				neuesFragment = new Bestellungen();
 				break;
+				
 			default:
 				return;
 		}
