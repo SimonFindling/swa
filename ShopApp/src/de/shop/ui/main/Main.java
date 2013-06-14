@@ -22,6 +22,10 @@ public class Main extends Activity implements OnClickListener {
         setContentView(R.layout.main);
 		
 		findViewById(R.id.btn_suchen).setOnClickListener(this);
+		
+		getFragmentManager().beginTransaction()
+        .add(R.id.details, new Startseite())
+        .commit();
     }
     
 	@Override // OnClickListener
