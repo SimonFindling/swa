@@ -24,4 +24,14 @@
 	    android:gravity="center_vertical"
 	    android:minHeight="?android:attr/listPreferredItemHeight" />
 	
+	<TextView
+		android:id="@+id/nachname_txt"
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:textIsSelectable="false"
+		android:layout_marginLeft="20dp"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+	    android:gravity="center_vertical"
+	    android:minHeight="?android:attr/listPreferredItemHeight" />
+	
 </LinearLayout>

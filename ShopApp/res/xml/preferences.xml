@@ -28,6 +28,23 @@
 			android:title="@string/s_path_title"
 			android:summary="@string/s_path_summary"
 			android:defaultValue="/shop/rest" />
+		
+		<EditTextPreference
+			android:key="timeout"
+			android:title="@string/s_timeout_title"
+			android:summary="@string/s_timeout_summary"
+			android:defaultValue="3" />
+		
+		<EditTextPreference
+			android:key="username"
+			android:title="@string/s_username_title"
+			android:summary="@string/s_username_summary" />
+		
+		<EditTextPreference
+			android:key="password"
+			android:title="@string/s_password_title"
+			android:summary="@string/s_password_summary"
+			android:password="true" />
 
 	</PreferenceCategory>
 	

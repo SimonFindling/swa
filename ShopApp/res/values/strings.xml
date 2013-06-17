@@ -9,6 +9,8 @@
 	<string name="s_nav_bestellungen">Orders</string>
 	<string name="s_desc_icon">Icon for the navigation item</string>
 	<string name="s_kunden_suche_id">Search by ID</string>
+	<string name="s_btn_delete">Delete</string>
+	<string name="s_kunden_delete">Delete customer</string>
 	<string name="s_kunden_suche_nachname">Search by lastname</string>
 	<string name="s_neu_anlegen">Create</string>
 	<string name="s_einstellungen">Settings</string>
@@ -28,5 +30,19 @@
     <string name="s_path_summary">Path for the web service, e.g. /shop/rest</string>
     <string name="s_mock_title">Offline test mode</string>
     <string name="s_mock_summary">Instead of RESTful Web Service</string>
+    <string name="s_timeout_title">Timeout for server access</string>
+    <string name="s_timeout_summary">Timeout in seconds</string>
+    <string name="s_username_title">Benutzername</string>
+    <string name="s_username_summary">Benutzername für den RESTful Web Service</string>
+    <string name="s_password_title">Kennwort</string>
+    <string name="s_password_summary">Kennwort für den RESTful Web Service</string>
+    <string name="s_bitte_warten">Please wait &#8230;</string>
+    <string name="s_ok">OK</string>
+    <string name="s_error_prefs_login">Missing or wrong login data in the settings.</string>
+    <string name="s_error_forbidden">You are not allowed to invoke this operation.</string>
+    <string name="s_wifi">WiFi Connection available</string>
+    <string name="s_mobile">Mobile Connection available</string>
+    <string name="s_not_connected">No Network available</string>
+    <string name="s_mock">ATTENTION: offline test mode</string>
     	
 </resources>

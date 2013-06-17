@@ -21,6 +21,17 @@ public class BestellungService extends Service {
 		return binder;
 	}
 	
+	private ProgressDialog progressDialog;
+	private ProgressDialog showProgressDialog(Context ctx) {
+		progressDialog = new ProgressDialog(ctx);  // Objekt this der umschliessenden Klasse Startseite
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);  // Kreis (oder horizontale Linie)
+		progressDialog.setMessage(getString(R.string.s_bitte_warten));
+		progressDialog.setCancelable(true);      // Abbruch durch Zuruecktaste 
+		progressDialog.setIndeterminate(true);   // Unbekannte Anzahl an Bytes werden vom Web Service geliefert
+		progressDialog.show();
+		return progressDialog;
+	}
+	
 	public class BestellungServiceBinder extends Binder {
 		
 		// Aufruf in einem eigenen Thread
@@ -51,6 +62,20 @@ public class BestellungService extends Service {
 				}
 				
 				@Override
+				// Neuer Thread, damit der UI-Thread nicht blockiert wird
+				protected HttpResponse<Bestellung> doInBackground(Long... ids) {
+					final Long bestellungId = ids[0];
+		    		final String path = BESTELLUNGEN_PATH + "/" + bestellungId;
+		    		Log.v(LOG_TAG, "path = " + path);
+
+		    		final HttpResponse<Bestellung> result = mock
+		    				                                ? Mock.sucheBestellungById(bestellungId)
+		    				                                : WebServiceClient.getJsonSingle(path, Bestellung.class);
+					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
+					return result;
+				}
+				
+				@Override
 	    		protected void onPostExecute(Bestellung bestellung) {
 					Log.d(LOG_TAG, "... ProgressDialog im laufenden Thread beenden ...");
 	    		}
@@ -66,6 +91,17 @@ public class BestellungService extends Service {
 			}
 	    	
 	    	return bestellung;
+	    	
+	    	getBestellungByIdTask.execute(Long.valueOf(id));
+			HttpResponse<Bestellung> result = null;
+	    	try {
+	    		result = getBestellungByIdTask.get(timeout, SECONDS);
+			}
+	    	catch (Exception e) {
+	    		throw new InternalShopError(e.getMessage(), e);
+			}
+	    	
+	    	return result;
 		}
 	}
 }
