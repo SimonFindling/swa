@@ -47,6 +47,9 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 	private static final String[] FROM = { ICON, TEXT };
 	private static final int[] TO = { R.id.nav_icon, R.id.nav_text };
 	
+	private PopupMenu kundenPopup;
+	private PopupMenu bestellungenPopup;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final ListAdapter listAdapter = createListAdapter();        
@@ -97,6 +100,32 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 		// itemPosition: Textposition innerhalb der Liste mit Zaehlung ab 0
 		// itemId = itemPosition bei String-Arrays bzw. = Primaerschluessel bei Listen aus einer DB
 		
+		PopupMenu popup;
+		switch (NavType.valueOf(itemPosition)) {
+			case KUNDEN:
+				if (kundenPopup == null) {
+					kundenPopup = new PopupMenu(getActivity(), view);
+					kundenPopup.inflate(R.menu.kunden_popup);
+					kundenPopup.setOnMenuItemClickListener(this);
+				}
+				popup = kundenPopup;
+				break;
+				
+			case BESTELLUNGEN:
+				if (bestellungenPopup == null) {
+					bestellungenPopup = new PopupMenu(getActivity(), view);
+					bestellungenPopup.inflate(R.menu.bestellungen_popup);
+					bestellungenPopup.setOnMenuItemClickListener(this);
+				}
+				popup = bestellungenPopup;
+				break;
+				
+			default:
+				return;
+		}
+
+		popup.show();
+		
 		Fragment neuesFragment;
 		switch (NavType.valueOf(itemPosition)) {
 			case KUNDEN:
@@ -111,10 +140,32 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 				return;
 		}
 		
+		@Override
+		// Implementierung zum Interface OnMenuItemClickListener fuer die Popup-Menues
+		public boolean onMenuItemClick(MenuItem item) {
+			Fragment neuesFragment;
+			switch (item.getItemId()) {
+				case R.id.kunden_suche_id:
+					neuesFragment = new KundenSucheId();
+					break;
+					
+				case R.id.kunden_suche_nachname:
+					neuesFragment = new KundenSucheNachname();
+					break;
+
+				case R.id.bestellungen_neu:
+					neuesFragment = new BestellungenNeu();
+					break;
+
+				default:
+					return false;
+			}
+		
 		// Kein Name (null) fuer die Transaktion, da die Klasse BackStageEntry nicht verwendet wird
 		getFragmentManager().beginTransaction()
 		                    .replace(R.id.details, neuesFragment)
 		                    .addToBackStack(null)  
 		                    .commit();
+		return true;
 	}
 }

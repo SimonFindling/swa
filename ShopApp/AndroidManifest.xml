@@ -7,6 +7,9 @@
 		android:minSdkVersion="17"
 		android:targetSdkVersion="17" />
 	
+	<!-- Ansonsten: android.content.res.Resources$NotFoundException -->
+	<supports-screens android:requiresSmallestWidthDp="600"/>
+	
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 	<application
@@ -17,6 +20,16 @@
 		
 		<activity
 			android:name=".ui.main.Main"
+			android:label="@string/s_app_name" >
+			<intent-filter>
+				<!-- in Android gibt es keine Methode main() -->
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		
+		<activity
+			android:name=".ui.Main"
 			android:label="@string/s_app_name" >
 			<intent-filter>
 				<!-- in Android gibt es keine Methode main() -->
