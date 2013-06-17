@@ -5,12 +5,29 @@
     <string name="s_btn_suchen">Suchen</string>
     <string name="s_menu_settings">Einstellungen</string>
 	<string name="s_kunde_id_hint">Kundennummer eingeben</string>
-	<string name="s_hallo">Hallo!</string>
+	<string name="s_hallo">Hallo! Nicht vergessen: Den Testmodus in den Einstellungen setzen</string>
 	<string name="s_nav_kunden">Kunden</string>
 	<string name="s_nav_bestellungen">Bestellungen</string>
 	<string name="s_desc_icon">Icon für den Navigationseintrag</string>
-		<string name="s_kunden_suche_id">Suche mit Kundennr.</string>
+	<string name="s_kunden_suche_id">Suche mit Kundennr.</string>
 	<string name="s_kunden_suche_nachname">Suche mit Nachname</string>
 	<string name="s_neu_anlegen">Neu anlegen</string>
+	<string name="s_kunden_suche_name">Suche mit Name</string>
+	<string name="s_option_edit">Ändern</string>
+    <string name="s_option_suchen">Suchen</string>
+    <string name="s_option_speichern">Speichern</string>
+    <string name="s_hint_kundennr_bestellnr">Kunden-/Bestellnr.</string>
+    <string name="s_verbindungsdaten_pref">Konfiguration der Verbindungsdaten für den Web Service</string>
+    <string name="s_mock_pref">Konfiguration für Mock-Objekte</string>
+    <string name="s_protocol_title">Http(s) Protokoll</string>
+    <string name="s_protocol_summary">Http oder https als Protokoll für den Web Service</string>
+    <string name="s_host_title">Rechnername</string>
+    <string name="s_host_summary">Rechnername oder IP-Adresse für den Web Service, z.B. 10.0.2.2</string>
+    <string name="s_port_title">Portnummer</string>
+    <string name="s_port_summary">Portnummer für den Web Service, z.B. 80 oder 8080</string>
+    <string name="s_path_title">Pfad</string>
+    <string name="s_path_summary">Pfad für den Web Service, z.B. /shop/rest</string>
+    <string name="s_mock_title">Testmodus im Offline-Betrieb</string>
+    <string name="s_mock_summary">Anstatt RESTful Web Service</string>
     
 </resources>

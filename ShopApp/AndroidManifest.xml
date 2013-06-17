@@ -26,7 +26,61 @@
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
+			
+			
+			<meta-data
+            	android:name="android.app.default_searchable"
+            	android:value=".ui.main.SucheIdActivity" />
 		</activity>
+		
+		<activity
+			android:name=".ui.kunde.KundenListe"
+			android:label="@string/k_kunden_liste_title"
+			android:parentActivityName=".ui.main.Main"
+			android:exported="false" > <!-- false ist der Defaultwert, da es keinen intent-filter gibt -->
+			
+			<meta-data
+            	android:name="android.app.default_searchable"
+            	android:value=".ui.kunde.SucheNameActivity" />
+		</activity>
+		
+		<activity
+			android:name=".ui.main.SucheIdActivity"
+			android:exported="false" >
+			
+			<!-- Activity als "searchable" deklarieren -->
+			<intent-filter>
+	            <action android:name="android.intent.action.SEARCH" />
+	            <category android:name="android.intent.category.DEFAULT" />
+	        </intent-filter>
+			
+			<!-- Weitere Konfiguration fuer die Suche durch diese Activity -->
+			<meta-data
+	            android:name="android.app.searchable"
+	            android:resource="@xml/searchable_id" />
+		</activity>
+		
+		<activity
+			android:name=".ui.kunde.SucheNameActivity"
+			android:exported="false" >
+			
+			<!-- Activity als "searchable" deklarieren -->
+			<intent-filter>
+	            <action android:name="android.intent.action.SEARCH" />
+	            <category android:name="android.intent.category.DEFAULT" />
+	        </intent-filter>
+			
+			<!-- Weitere Konfiguration fuer die Suche durch diese Activity -->
+			<meta-data
+	            android:name="android.app.searchable"
+	            android:resource="@xml/searchable_name" />
+		</activity>
+		
+		<service
+			android:name=".service.KundeService" />
+		
+		<service
+			android:name=".service.BestellungService" />
 		
 		<activity
 			android:name=".ui.Main"

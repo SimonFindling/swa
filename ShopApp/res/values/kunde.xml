@@ -1,9 +1,19 @@
 <resources>
 
+	<string name="k_kunde_id_hint">Enter customer no.</string>
     <string name="k_kunde_details_title">Customer</string>
+    <string name="k_name_hint">Enter the name</string>
+    <string name="k_stammdaten">Master data</string>
+    <string name="k_bestellungen">Orders</string>
     <string name="k_kunde_id">Customer No.</string>
     <string name="k_name">Name</string>
     <string name="k_kunde_suche_id_label">Search a customer by id</string>
 	<string name="k_kunde_suche_nachname_label">Search a customer by lastname</string>
+	<string name="k_bestellungen_kunde_id">Customer %d:</string>
+    <string name="k_kunde_bestellung_id">Order no. %d</string>
+    <string name="k_bestellung_id">Order no.</string>
+    <string name="k_datum">Date</string>
+    <string name="k_kunden_liste_title">Customers</string>
+    <string name="k_hint_kundenname">Customer name</string>
 	
 </resources>

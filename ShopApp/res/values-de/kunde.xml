@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <resources>
 
+	<string name="k_kunde_id_hint">Kundennummer eingeben</string>
     <string name="k_kunde_details_title">Gesuchter Kunde</string>
     <string name="k_kunde_id">Kundennummer</string>
     <string name="k_name">Name</string>
     <string name="k_kunde_suche_id_label">Suche mit ID</string>
 	<string name="k_kunde_suche_nachname_label">Suche mit Nachname</string>
+	<string name="k_name_hint">Name eingeben</string>
+    <string name="k_stammdaten">Stammdaten</string>
+    <string name="k_bestellungen">Bestellungen</string>
+    <string name="k_bestellungen_kunde_id">Kunde %d:</string>
+    <string name="k_kunde_bestellung_id">Bestellnr. %d</string>
+    <string name="k_bestellung_id">Bestellnr.</string>
+    <string name="k_datum">Datum</string>
+    <string name="k_kunden_liste_title">Gefundene Kunden</string>
+    <string name="k_hint_kundenname">Kundenname</string>
 
 </resources>

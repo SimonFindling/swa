@@ -1,0 +1,39 @@
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	tools:context=".ui.main.Main" >
+
+	<TableRow>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/k_kunde_id" />
+		
+		<TextView
+			android:id="@+id/kunde_id"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="5dp" />
+
+	</TableRow>
+	
+	<TableRow>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/k_name" />
+		
+		<EditText
+		    android:id="@+id/name_edt"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:inputType="text"
+		    android:paddingLeft="5dp"
+		    tools:ignore="LabelFor" />
+
+	</TableRow>
+
+</TableLayout>

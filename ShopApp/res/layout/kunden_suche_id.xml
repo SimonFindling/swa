@@ -5,6 +5,25 @@
     android:orientation="vertical"
 	tools:context=".ui.main.Main" >
 	
+	<EditText
+	    android:id="@+id/kunde_id_edt"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:hint="@string/k_kunde_id_hint"
+	    android:inputType="number"
+	    tools:ignore="LabelFor" >
+
+		<requestFocus />
+		
+	</EditText>
+	
+	<Button
+		android:id="@+id/btn_suchen"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="50dp"
+		android:text="@string/s_btn_suchen" />
+	
     <TextView
     	android:layout_width="match_parent"
         android:layout_height="match_parent"
