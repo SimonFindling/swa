@@ -44,5 +44,9 @@
     <string name="s_mobile">Mobile Connection available</string>
     <string name="s_not_connected">No Network available</string>
     <string name="s_mock">ATTENTION: offline test mode</string>
+    <string name="s_kunden_suche_name">Search by name</string>
+    <string name="s_action_suchen_short">Search</string>
+    <string name="s_ja">Yes</string>
+    <string name="s_nein">No</string>
     	
 </resources>
