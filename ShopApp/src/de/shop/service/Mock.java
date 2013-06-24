@@ -72,6 +72,12 @@ final class Mock {
     	}
     	
     	int dateinameId;
+    	if (id % 3 == 0) {
+    		dateinameId = R.raw.mock_firmenkunde;
+    	}
+    	else {
+    		dateinameId = R.raw.mock_privatkunde;
+    	}
     	
     	final String jsonStr = read(dateinameId);
     	JsonReader jsonReader = null;
@@ -85,9 +91,7 @@ final class Mock {
     			jsonReader.close();
     		}
     	}
-    	
     	final Kunde kunde = new Kunde();
-
     	kunde.fromJsonObject(jsonObject);
     	kunde.id = id;
 		

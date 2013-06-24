@@ -1,42 +1,48 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent"
 	tools:context=".ui.main.Main" >
-
-	<TableRow>
-
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/k_kunde_id" />
-		
-		<TextView
-			android:id="@+id/kunde_id"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:paddingLeft="5dp" />
-
-	</TableRow>
 	
-	<TableRow>
-
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/k_name" />
-		
-		<EditText
-		    android:id="@+id/name_edt"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:inputType="text"
-		    android:paddingLeft="5dp"
-		    tools:ignore="LabelFor" />
-
-	</TableRow>
+	<TableLayout
+	    android:layout_width="match_parent"
+		android:layout_height="wrap_content" >
 	
-	<TableRow>
+		<TableRow>
+	
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/k_kunde_id" />
+			
+			<TextView
+				android:id="@+id/kunde_id"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textIsSelectable="true"
+				android:paddingLeft="5dp" />
+	
+		</TableRow>
+		
+		<TableRow>
+	
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/k_nachname" />
+			
+			<EditText
+			    android:id="@+id/nachname_edt"
+			    style="@style/RechteSpalteText"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content"
+			    android:inputType="text"
+			    android:paddingLeft="5dp"
+			    tools:ignore="LabelFor" />
+	
+		</TableRow>
+		
+		<TableRow>
 		
 	        <TextView
 	            android:layout_width="match_parent"
@@ -230,6 +236,39 @@
 		    
 		</TableRow>
 	
-	    
-
-</TableLayout>
+	    <TableRow>
+	    	<TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="@string/k_hobbies" />
+	    	
+	    	<LinearLayout
+	    		android:orientation="vertical"
+	    		android:layout_width="wrap_content"
+	    		android:layout_height="wrap_content">
+	
+			    <CheckBox
+			    	android:id="@+id/sport"
+			    	android:layout_width="wrap_content"
+			    	android:layout_height="wrap_content"
+			    	android:text="@string/k_sport" />
+			    
+			    <CheckBox
+			    	android:id="@+id/lesen"
+			    	android:layout_width="wrap_content"
+			    	android:layout_height="wrap_content"
+			    	android:text="@string/k_lesen" />
+			    
+			    <CheckBox
+			    	android:id="@+id/reisen"
+			    	android:layout_width="wrap_content"
+			    	android:layout_height="wrap_content"
+			    	android:text="@string/k_reisen" />
+	
+	    	</LinearLayout>
+	    	
+	    </TableRow>
+	
+	</TableLayout>
+	
+</ScrollView>
