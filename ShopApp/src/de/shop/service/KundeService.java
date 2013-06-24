@@ -28,23 +28,20 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import de.shop.R;
-import de.shop.data.AbstractKunde;
-import de.shop.data.Firmenkunde;
-import de.shop.data.Privatkunde;
+import de.shop.data.Kunde;
 import de.shop.util.InternalShopError;
 
 public class KundeService extends Service {
 	private static final String LOG_TAG = KundeService.class.getSimpleName();
 	private static final String TYPE = "type";
-	private static final Map<String, Class<? extends AbstractKunde>> CLASS_MAP;
+	private static final Map<String, Class<? extends Kunde>> CLASS_MAP;
 	
 	private KundeServiceBinder binder = new KundeServiceBinder();
 	
 	static {
 		// 2 Eintraege in die HashMap mit 100% = 1.0 Fuellgrad
-		CLASS_MAP = new HashMap<String, Class<? extends AbstractKunde>>(2, 1);
-		CLASS_MAP.put("P", Privatkunde.class);
-		CLASS_MAP.put("F", Firmenkunde.class);
+		CLASS_MAP = new HashMap<String, Class<? extends Kunde>>(2, 1);
+		CLASS_MAP.put("P", Kunde.class);
 	}
 
 	@Override
@@ -71,10 +68,10 @@ public class KundeService extends Service {
 		
 		/**
 		 */
-		public HttpResponse<AbstractKunde> sucheKundeById(Long id, final Context ctx) {
+		public HttpResponse<Kunde> sucheKundeById(Long id, final Context ctx) {
 			
 			// (evtl. mehrere) Parameter vom Typ "Long", Resultat vom Typ "AbstractKunde"
-			final AsyncTask<Long, Void, HttpResponse<AbstractKunde>> sucheKundeByIdTask = new AsyncTask<Long, Void, HttpResponse<AbstractKunde>>() {
+			final AsyncTask<Long, Void, HttpResponse<Kunde>> sucheKundeByIdTask = new AsyncTask<Long, Void, HttpResponse<Kunde>>() {
 				@Override
 	    		protected void onPreExecute() {
 					progressDialog = showProgressDialog(ctx);
@@ -82,11 +79,11 @@ public class KundeService extends Service {
 				
 				@Override
 				// Neuer Thread, damit der UI-Thread nicht blockiert wird
-				protected HttpResponse<AbstractKunde> doInBackground(Long... ids) {
+				protected HttpResponse<Kunde> doInBackground(Long... ids) {
 					final Long id = ids[0];
 		    		final String path = KUNDEN_PATH + "/" + id;
 		    		Log.v(LOG_TAG, "path = " + path);
-		    		final HttpResponse<AbstractKunde> result = mock
+		    		final HttpResponse<Kunde> result = mock
 		    				                                   ? Mock.sucheKundeById(id)
 		    				                                   : WebServiceClient.getJsonSingle(path, TYPE, CLASS_MAP);
 
@@ -95,13 +92,13 @@ public class KundeService extends Service {
 				}
 				
 				@Override
-	    		protected void onPostExecute(HttpResponse<AbstractKunde> unused) {
+	    		protected void onPostExecute(HttpResponse<Kunde> unused) {
 					progressDialog.dismiss();
 	    		}
 			};
 
     		sucheKundeByIdTask.execute(id);
-    		HttpResponse<AbstractKunde> result = null;
+    		HttpResponse<Kunde> result = null;
 	    	try {
 	    		result = sucheKundeByIdTask.get(timeout, SECONDS);
 			}
@@ -117,7 +114,7 @@ public class KundeService extends Service {
 		    return result;
 		}
 		
-		private void setBestellungenUri(AbstractKunde kunde) {
+		private void setBestellungenUri(Kunde kunde) {
 	    	// URLs der Bestellungen fuer Emulator anpassen
 	    	final String bestellungenUri = kunde.bestellungenUri;
 	    	if (!TextUtils.isEmpty(bestellungenUri)) {
@@ -127,9 +124,9 @@ public class KundeService extends Service {
 		
 		/**
 		 */
-		public HttpResponse<AbstractKunde> sucheKundenByNachname(String nachname, final Context ctx) {
+		public HttpResponse<Kunde> sucheKundenByNachname(String nachname, final Context ctx) {
 			// (evtl. mehrere) Parameter vom Typ "String", Resultat vom Typ "List<AbstractKunde>"
-			final AsyncTask<String, Void, HttpResponse<AbstractKunde>> sucheKundenByNameTask = new AsyncTask<String, Void, HttpResponse<AbstractKunde>>() {
+			final AsyncTask<String, Void, HttpResponse<Kunde>> sucheKundenByNameTask = new AsyncTask<String, Void, HttpResponse<Kunde>>() {
 				@Override
 	    		protected void onPreExecute() {
 					progressDialog = showProgressDialog(ctx);
@@ -137,11 +134,11 @@ public class KundeService extends Service {
 				
 				@Override
 				// Neuer Thread, damit der UI-Thread nicht blockiert wird
-				protected HttpResponse<AbstractKunde> doInBackground(String... nachnamen) {
+				protected HttpResponse<Kunde> doInBackground(String... nachnamen) {
 					final String nachname = nachnamen[0];
 					final String path = NACHNAME_PATH + nachname;
 					Log.v(LOG_TAG, "path = " + path);
-		    		final HttpResponse<AbstractKunde> result = mock
+		    		final HttpResponse<Kunde> result = mock
 		    				                                   ? Mock.sucheKundenByNachname(nachname)
 		    				                                   : WebServiceClient.getJsonList(path, TYPE, CLASS_MAP);
 					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
@@ -149,13 +146,13 @@ public class KundeService extends Service {
 				}
 				
 				@Override
-	    		protected void onPostExecute(HttpResponse<AbstractKunde> unused) {
+	    		protected void onPostExecute(HttpResponse<Kunde> unused) {
 					progressDialog.dismiss();
 	    		}
 			};
 			
 			sucheKundenByNameTask.execute(nachname);
-			HttpResponse<AbstractKunde> result = null;
+			HttpResponse<Kunde> result = null;
 			try {
 				result = sucheKundenByNameTask.get(timeout, SECONDS);
 			}
@@ -167,9 +164,9 @@ public class KundeService extends Service {
 	    		return result;
 	    	}
 	    	
-	    	final ArrayList<AbstractKunde> kunden = result.resultList;
+	    	final ArrayList<Kunde> kunden = result.resultList;
 	    	// URLs fuer Emulator anpassen
-	    	for (AbstractKunde k : kunden) {
+	    	for (Kunde k : kunden) {
 	    		setBestellungenUri(k);
 	    	}
 			return result;
@@ -243,9 +240,9 @@ public class KundeService extends Service {
 
 		/**
 		 */
-		public HttpResponse<AbstractKunde> createKunde(AbstractKunde kunde, final Context ctx) {
+		public HttpResponse<Kunde> createKunde(Kunde kunde, final Context ctx) {
 			// (evtl. mehrere) Parameter vom Typ "AbstractKunde", Resultat vom Typ "void"
-			final AsyncTask<AbstractKunde, Void, HttpResponse<AbstractKunde>> createKundeTask = new AsyncTask<AbstractKunde, Void, HttpResponse<AbstractKunde>>() {
+			final AsyncTask<Kunde, Void, HttpResponse<Kunde>> createKundeTask = new AsyncTask<Kunde, Void, HttpResponse<Kunde>>() {
 				@Override
 	    		protected void onPreExecute() {
 					progressDialog = showProgressDialog(ctx);
@@ -253,12 +250,12 @@ public class KundeService extends Service {
 				
 				@Override
 				// Neuer Thread, damit der UI-Thread nicht blockiert wird
-				protected HttpResponse<AbstractKunde> doInBackground(AbstractKunde... kunden) {
-					final AbstractKunde kunde = kunden[0];
+				protected HttpResponse<Kunde> doInBackground(Kunde... kunden) {
+					final Kunde kunde = kunden[0];
 		    		final String path = KUNDEN_PATH;
 		    		Log.v(LOG_TAG, "path = " + path);
 
-		    		final HttpResponse<AbstractKunde> result = mock
+		    		final HttpResponse<Kunde> result = mock
                                                                ? Mock.createKunde(kunde)
                                                                : WebServiceClient.postJson(kunde, path);
 		    		
@@ -267,13 +264,13 @@ public class KundeService extends Service {
 				}
 				
 				@Override
-	    		protected void onPostExecute(HttpResponse<AbstractKunde> unused) {
+	    		protected void onPostExecute(HttpResponse<Kunde> unused) {
 					progressDialog.dismiss();
 	    		}
 			};
 			
 			createKundeTask.execute(kunde);
-			HttpResponse<AbstractKunde> response = null; 
+			HttpResponse<Kunde> response = null; 
 			try {
 				response = createKundeTask.get(timeout, SECONDS);
 			}
@@ -282,15 +279,15 @@ public class KundeService extends Service {
 			}
 			
 			kunde.id = Long.valueOf(response.content);
-			final HttpResponse<AbstractKunde> result = new HttpResponse<AbstractKunde>(response.responseCode, response.content, kunde);
+			final HttpResponse<Kunde> result = new HttpResponse<Kunde>(response.responseCode, response.content, kunde);
 			return result;
 	    }
 		
 		/**
 		 */
-		public HttpResponse<AbstractKunde> updateKunde(AbstractKunde kunde, final Context ctx) {
+		public HttpResponse<Kunde> updateKunde(Kunde kunde, final Context ctx) {
 			// (evtl. mehrere) Parameter vom Typ "AbstractKunde", Resultat vom Typ "void"
-			final AsyncTask<AbstractKunde, Void, HttpResponse<AbstractKunde>> updateKundeTask = new AsyncTask<AbstractKunde, Void, HttpResponse<AbstractKunde>>() {
+			final AsyncTask<Kunde, Void, HttpResponse<Kunde>> updateKundeTask = new AsyncTask<Kunde, Void, HttpResponse<Kunde>>() {
 				@Override
 	    		protected void onPreExecute() {
 					progressDialog = showProgressDialog(ctx);
@@ -298,12 +295,12 @@ public class KundeService extends Service {
 				
 				@Override
 				// Neuer Thread, damit der UI-Thread nicht blockiert wird
-				protected HttpResponse<AbstractKunde> doInBackground(AbstractKunde... kunden) {
-					final AbstractKunde kunde = kunden[0];
+				protected HttpResponse<Kunde> doInBackground(Kunde... kunden) {
+					final Kunde kunde = kunden[0];
 		    		final String path = KUNDEN_PATH;
 		    		Log.v(LOG_TAG, "path = " + path);
 
-		    		final HttpResponse<AbstractKunde> result = mock
+		    		final HttpResponse<Kunde> result = mock
 		    				                          ? Mock.updateKunde(kunde)
 		    		                                  : WebServiceClient.putJson(kunde, path);
 					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
@@ -311,13 +308,13 @@ public class KundeService extends Service {
 				}
 				
 				@Override
-	    		protected void onPostExecute(HttpResponse<AbstractKunde> unused) {
+	    		protected void onPostExecute(HttpResponse<Kunde> unused) {
 					progressDialog.dismiss();
 	    		}
 			};
 			
 			updateKundeTask.execute(kunde);
-			final HttpResponse<AbstractKunde> result;
+			final HttpResponse<Kunde> result;
 			try {
 				result = updateKundeTask.get(timeout, SECONDS);
 			}
