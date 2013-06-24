@@ -27,8 +27,8 @@ public class KundenListeNav extends ListFragment implements OnItemClickListener 
 	private static final String LOG_TAG = KundenListeNav.class.getSimpleName();
 	
 	private static final String ID = "id";
-	private static final String NAME = "name";
-	private static final String[] FROM = { ID, NAME};
+	private static final String NACHNAME = "nachname";
+	private static final String[] FROM = { ID, NACHNAME};
 	private static final int[] TO = { R.id.kunde_id, R.id.name_txt };
 	
 	private List<Kunde> kunden;
@@ -52,7 +52,7 @@ public class KundenListeNav extends ListFragment implements OnItemClickListener 
 		for (Kunde k : kunden) {
     		final Map<String, Object> kundeItem = new HashMap<String, Object>(2, 1); // max 2 Eintraege, bis zu 100 % Fuellung
     		kundeItem.put(ID, k.id);
-    		kundeItem.put(NAME, k.name);
+    		kundeItem.put(NACHNAME, k.nachname);
     		kundenItems.add(kundeItem);        	
         }
 		

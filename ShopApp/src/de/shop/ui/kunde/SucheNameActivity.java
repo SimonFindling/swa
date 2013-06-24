@@ -64,7 +64,7 @@ public class SucheNameActivity extends Activity {
 	}
 	
 	private void suchen(String name) {
-		final ArrayList<Kunde> kunden = kundeServiceBinder.sucheKundenByName(name);
+		final ArrayList<Kunde> kunden = kundeServiceBinder.sucheKundenByNachname(name, this).resultList;
 		Log.d(LOG_TAG, kunden.toString());
 		
 		final Intent intent = new Intent(this, KundenListe.class);
