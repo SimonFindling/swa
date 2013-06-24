@@ -1,14 +1,41 @@
 package de.shop.service;
 
+import static de.shop.ShopApp.jsonReaderFactory;
+import static de.shop.ui.main.Prefs.username;
+import static de.shop.util.Constants.KUNDEN_PATH;
+import static java.net.HttpURLConnection.HTTP_CONFLICT;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.shop.data.Bestellung;
+import javax.json.JsonArray;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+
+import android.text.TextUtils;
+import android.util.Log;
+import de.shop.R;
+import de.shop.ShopApp;
 import de.shop.data.Kunde;
+import de.shop.data.Bestellung;
+import de.shop.util.InternalShopError;
 
 final class Mock {
-private static final String LOG_TAG = Mock.class.getSimpleName();
+	private static final String LOG_TAG = Mock.class.getSimpleName();
 	
 	private static String read(int dateinameId) {
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(ShopApp.open(dateinameId)));
@@ -39,18 +66,12 @@ private static final String LOG_TAG = Mock.class.getSimpleName();
 		return jsonStr;
 	}
 	
-	static HttpResponse<AbstractKunde> sucheKundeById(Long id) {
+	static HttpResponse<Kunde> sucheKundeById(Long id) {
     	if (id <= 0 || id >= 1000) {
-    		return new HttpResponse<AbstractKunde>(HTTP_NOT_FOUND, "Kein Kunde gefunden mit ID " + id);
+    		return new HttpResponse<Kunde>(HTTP_NOT_FOUND, "Kein Kunde gefunden mit ID " + id);
     	}
     	
     	int dateinameId;
-    	if (id % 3 == 0) {
-    		dateinameId = R.raw.mock_firmenkunde;
-    	}
-    	else {
-    		dateinameId = R.raw.mock_privatkunde;
-    	}
     	
     	final String jsonStr = read(dateinameId);
     	JsonReader jsonReader = null;
@@ -65,23 +86,21 @@ private static final String LOG_TAG = Mock.class.getSimpleName();
     		}
     	}
     	
-    	final AbstractKunde kunde = jsonObject.getString("type").equals("P")
-    	                            ? new Privatkunde()
-    	                            : new Firmenkunde();
+    	final Kunde kunde = new Kunde();
 
     	kunde.fromJsonObject(jsonObject);
     	kunde.id = id;
 		
-    	final HttpResponse<AbstractKunde> result = new HttpResponse<AbstractKunde>(HTTP_OK, jsonObject.toString(), kunde);
+    	final HttpResponse<Kunde> result = new HttpResponse<Kunde>(HTTP_OK, jsonObject.toString(), kunde);
     	return result;
 	}
 
-	static HttpResponse<AbstractKunde> sucheKundenByNachname(String nachname) {
+	static HttpResponse<Kunde> sucheKundenByNachname(String nachname) {
 		if (nachname.startsWith("X")) {
-			return new HttpResponse<AbstractKunde>(HTTP_NOT_FOUND, "Keine Kunde gefunden mit Nachname " + nachname);
+			return new HttpResponse<Kunde>(HTTP_NOT_FOUND, "Keine Kunde gefunden mit Nachname " + nachname);
 		}
 		
-		final ArrayList<AbstractKunde> kunden = new ArrayList<AbstractKunde>();
+		final ArrayList<Kunde> kunden = new ArrayList<Kunde>();
 		final String jsonStr = read(R.raw.mock_kunden);
 		JsonReader jsonReader = null;
     	JsonArray jsonArray;
@@ -97,50 +116,33 @@ private static final String LOG_TAG = Mock.class.getSimpleName();
 		
     	final List<JsonObject> jsonObjectList = jsonArray.getValuesAs(JsonObject.class);
    		for (JsonObject jsonObject : jsonObjectList) {
-           	final AbstractKunde kunde = jsonObject.getString("type").equals("P")
-   					                    ? new Privatkunde()
-   			                            : new Firmenkunde();
+           	final Kunde kunde = new Kunde();
 			kunde.fromJsonObject(jsonObject);
 			kunde.nachname = nachname;
    			kunden.add(kunde);
    		}
     	
-    	final HttpResponse<AbstractKunde> result = new HttpResponse<AbstractKunde>(HTTP_OK, jsonArray.toString(), kunden);
+    	final HttpResponse<Kunde> result = new HttpResponse<Kunde>(HTTP_OK, jsonArray.toString(), kunden);
 		return result;
     }
 
-	
-	static Kunde sucheKundeById(Long id) {
-		return new Kunde(id, "Name" + id);
-	}
-	
-	static ArrayList<Kunde> sucheKundenByName(String name) {
-		final int anzahl = name.length() + 3;
-		final ArrayList<Kunde> kunden = new ArrayList<Kunde>(anzahl);
-		for (int i = 1; i <= anzahl; i++) {
-			final Kunde k = new Kunde(Long.valueOf(i), name);
-			kunden.add(k);
-		}
-
-		return kunden;
-    }
-
 	static List<Long> sucheBestellungenIdsByKundeId(Long id) {
+		if (id % 2 == 0) {
+			return Collections.emptyList();
+		}
+		
 		final int anzahl = (int) ((id % 3) + 3);  // 3 - 5 Bestellungen
 		final List<Long> ids = new ArrayList<Long>(anzahl);
 		
 		// Bestellung IDs sind letzte Dezimalstelle, da 3-5 Bestellungen (s.o.)
 		// Kunde-ID wird vorangestellt und deshalb mit 10 multipliziert
 		for (int i = 0; i < anzahl; i++) {
-			ids.add(Long.valueOf(id * 10 + 2 * i + 1));
+			ids.add((long) (id * 10 + 2 * i + 1));
 		}
 		return ids;
 	}
 
-	static Bestellung sucheBestellungById(Long id) {
-		return new Bestellung(id, new Date());
-	}
-	static List<Long> sucheKundeIdsByPrefix(String kundeIdPrefix) {
+    static List<Long> sucheKundeIdsByPrefix(String kundeIdPrefix) {
 		int dateinameId = -1;
     	if ("1".equals(kundeIdPrefix)) {
     		dateinameId = R.raw.mock_ids_1;
@@ -226,15 +228,15 @@ private static final String LOG_TAG = Mock.class.getSimpleName();
     	return result;
     }
     
-    static HttpResponse<AbstractKunde> createKunde(AbstractKunde kunde) {
+    static HttpResponse<Kunde> createKunde(Kunde kunde) {
     	kunde.id = Long.valueOf(kunde.nachname.length());  // Anzahl der Buchstaben des Nachnamens als emulierte neue ID
     	Log.d(LOG_TAG, "createKunde: " + kunde);
     	Log.d(LOG_TAG, "createKunde: " + kunde.toJsonObject());
-    	final HttpResponse<AbstractKunde> result = new HttpResponse<AbstractKunde>(HTTP_CREATED, KUNDEN_PATH + "/1", kunde);
+    	final HttpResponse<Kunde> result = new HttpResponse<Kunde>(HTTP_CREATED, KUNDEN_PATH + "/1", kunde);
     	return result;
     }
 
-    static HttpResponse<AbstractKunde> updateKunde(AbstractKunde kunde) {
+    static HttpResponse<Kunde> updateKunde(Kunde kunde) {
     	Log.d(LOG_TAG, "updateKunde: " + kunde);
     	
     	if (TextUtils.isEmpty(username)) {
@@ -267,6 +269,5 @@ private static final String LOG_TAG = Mock.class.getSimpleName();
 		return result;
 	}
     
-	
-	private Mock() {}
+    private Mock() {}
 }

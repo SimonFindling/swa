@@ -1,15 +1,21 @@
 package de.shop.service;
 
-import java.util.concurrent.TimeUnit;
+import static de.shop.ui.main.Prefs.mock;
+import static de.shop.ui.main.Prefs.timeout;
+import static de.shop.util.Constants.BESTELLUNGEN_PATH;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
+import android.app.ProgressDialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import de.shop.R;
 import de.shop.data.Bestellung;
-import de.shop.ui.main.Prefs;
+import de.shop.util.InternalShopError;
 
 public class BestellungService extends Service {
 	private static final String LOG_TAG = BestellungService.class.getSimpleName();
@@ -35,30 +41,14 @@ public class BestellungService extends Service {
 	public class BestellungServiceBinder extends Binder {
 		
 		// Aufruf in einem eigenen Thread
-		public Bestellung getBestellungById(Long id) {
+		public HttpResponse<Bestellung> getBestellungById(Long id, final Context ctx) {
 			
 			// (evtl. mehrere) Parameter vom Typ "Long", Resultat vom Typ "Bestellung"
-			final AsyncTask<Long, Void, Bestellung> getBestellungByIdTask = new AsyncTask<Long, Void, Bestellung>() {
+			final AsyncTask<Long, Void, HttpResponse<Bestellung>> getBestellungByIdTask = new AsyncTask<Long, Void, HttpResponse<Bestellung>>() {
 
 				@Override
 	    		protected void onPreExecute() {
-					Log.d(LOG_TAG, "... ProgressDialog im laufenden Thread starten ...");
-				}
-				
-				@Override
-				// Neuer Thread (hier: Emulation des REST-Aufrufs), damit der UI-Thread nicht blockiert wird
-				protected Bestellung doInBackground(Long... ids) {
-					final Long bestellungId = ids[0];
-			    	Bestellung bestellung;
-			    	if (Prefs.mock) {
-			    		bestellung = Mock.sucheBestellungById(bestellungId);
-			    	}
-			    	else {
-			    		Log.e(LOG_TAG, "Suche nach Bestellnummer ist nicht implementiert");
-			    		return null;
-			    	}
-					Log.d(LOG_TAG+ ".AsyncTask", "doInBackground: " + bestellung);
-					return bestellung;
+					progressDialog = showProgressDialog(ctx);
 				}
 				
 				@Override
@@ -76,23 +66,12 @@ public class BestellungService extends Service {
 				}
 				
 				@Override
-	    		protected void onPostExecute(Bestellung bestellung) {
-					Log.d(LOG_TAG, "... ProgressDialog im laufenden Thread beenden ...");
+	    		protected void onPostExecute(HttpResponse<Bestellung> unused) {
+					progressDialog.dismiss();
 	    		}
 			};
 			
-			getBestellungByIdTask.execute(id);
-	    	Bestellung bestellung = null;
-	    	try {
-	    		bestellung = getBestellungByIdTask.get(3L, TimeUnit.SECONDS);
-			}
-	    	catch (Exception e) {
-	    		Log.e(LOG_TAG, e.getMessage(), e);
-			}
-	    	
-	    	return bestellung;
-	    	
-	    	getBestellungByIdTask.execute(Long.valueOf(id));
+			getBestellungByIdTask.execute(Long.valueOf(id));
 			HttpResponse<Bestellung> result = null;
 	    	try {
 	    		result = getBestellungByIdTask.get(timeout, SECONDS);

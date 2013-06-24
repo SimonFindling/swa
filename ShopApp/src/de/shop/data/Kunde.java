@@ -14,7 +14,7 @@ import javax.json.JsonObjectBuilder;
 
 import de.shop.util.InternalShopError;
 
-public abstract class Kunde implements JsonMappable, Serializable {
+public class Kunde implements JsonMappable, Serializable {
 	private static final long serialVersionUID = -7505776004556360014L;
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -34,6 +34,9 @@ public abstract class Kunde implements JsonMappable, Serializable {
 	
 
 	
+	public Kunde() {
+	}
+
 	protected JsonObjectBuilder getJsonObjectBuilder() {
 		return jsonBuilderFactory.createObjectBuilder()
 				                 .add("id", id)
@@ -71,6 +74,11 @@ public abstract class Kunde implements JsonMappable, Serializable {
 		newsletter = jsonObject.getBoolean("newsletter");
 		agbAkzeptiert = jsonObject.getBoolean("agbAkzeptiert");
 		bestellungenUri = jsonObject.getString("bestellungenUri");
+	}
+	
+	@Override
+	public void updateVersion() {
+		version++;
 	}
 
 	@Override
