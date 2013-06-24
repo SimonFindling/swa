@@ -25,10 +25,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import de.shop.R;
-import de.shop.data.Bestellung;
 import de.shop.data.Kunde;
+import de.shop.data.Bestellung;
 import de.shop.service.BestellungService.BestellungServiceBinder;
 import de.shop.service.KundeService.KundeServiceBinder;
 import de.shop.ui.main.Main;
@@ -86,28 +85,32 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 			return;
 		}
 		
-		bestellungenIds = kundeServiceBinder.sucheBestellungenIdsByKundeId(kunde.id);
-		
-		// ListView mit den IDs der Bestellungen aufbauen
-		final ListView listView = (ListView) view.findViewById(R.id.bestellungen_liste);
-        int anzahl = bestellungenIds.size();
-        bestellungen = new ArrayList<Bestellung>(anzahl);
-		final String[] values = new String[anzahl];
-		for (int i = 0; i < anzahl; i++) {
-        	bestellungen.add(null);
-        	values[i] = getString(R.string.k_kunde_bestellung_id, bestellungenIds.get(anzahl - i - 1));
-        	Log.d(LOG_TAG, values[i]);
-        }
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),
-        		                                                      android.R.layout.simple_list_item_1,
-        		                                                      android.R.id.text1,
-        		                                                      values);
-        // Items in der Liste duerfen angeklickt werden
-		listView.setAdapter(adapter);
-		listView.setOnItemClickListener(this);
-		
-		// Die neueste Bestellung visualisieren
-		activateBestellung(0);
+		bestellungenIds = kundeServiceBinder.sucheBestellungenIdsByKundeId(kunde.id, view.getContext());
+		if (bestellungenIds == null || bestellungenIds.isEmpty()) {
+			kundeTxt.setText(getString(R.string.k_keine_bestellungen, kunde.id));
+		}
+		else {
+			// ListView mit den IDs der Bestellungen aufbauen
+			final ListView listView = (ListView) view.findViewById(R.id.bestellungen_liste);
+	        int anzahl = bestellungenIds.size();
+	        bestellungen = new ArrayList<Bestellung>(anzahl);
+			final String[] values = new String[anzahl];
+			for (int i = 0; i < anzahl; i++) {
+	        	bestellungen.add(null);
+	        	values[i] = getString(R.string.k_kunde_bestellung_id, bestellungenIds.get(anzahl - i - 1));
+	        	Log.d(LOG_TAG, values[i]);
+	        }
+	        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(view.getContext(),
+	        		                                                      android.R.layout.simple_list_item_1,
+	        		                                                      android.R.id.text1,
+	        		                                                      values);
+	        // Items in der Liste duerfen angeklickt werden
+			listView.setAdapter(adapter);
+			listView.setOnItemClickListener(this);
+			
+			// Die neueste Bestellung visualisieren
+			activateBestellung(0, view);
+		}
 		
 		final OnGestureListener onGestureListener = new WischenListener(activity);
 	    gestureDetector = new GestureDetector(activity, onGestureListener);  // Context und OnGestureListener als Argumente
@@ -122,7 +125,7 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 		// itemId = itemPosition bei String-Arrays bzw. = Primaerschluessel bei Listen aus einer DB
 		
 		// Bestellung ermitteln bzw. per Web Service nachladen
-		activateBestellung(itemPosition);
+		activateBestellung(itemPosition, view);
 	}
 	
 	@Override
@@ -152,7 +155,7 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 		}
 	}
 
-	private void activateBestellung(int itemPosition) {
+	private void activateBestellung(int itemPosition, View view) {
 		// Bestellung-ID ermitteln
 		bestellungenListePos = bestellungenIds.size() - itemPosition - 1;
 		
@@ -162,7 +165,7 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 			final Long bestellungId = bestellungenIds.get(bestellungenListePos);
 			Log.v(LOG_TAG, "Bestellung nachladen: " + bestellungId);
 			
-			bestellung = bestellungServiceBinder.getBestellungById(bestellungId);
+			bestellung = bestellungServiceBinder.getBestellungById(bestellungId, view.getContext()).resultObject;
 		}
 		else {
 			Log.v(LOG_TAG, "Bereits geladene Bestellung: " + bestellung);
@@ -171,7 +174,7 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 		}
 		
 		txtBestellungId.setText(String.valueOf(bestellung.id));
-		final String datumStr = DateFormat.getDateFormat(getActivity()).format(bestellung.datum);
+		final String datumStr = bestellung.datum == null ? "" : DateFormat.getDateFormat(getActivity()).format(bestellung.datum);
     	txtBestellungDatum.setText(datumStr);
 	}
 }
