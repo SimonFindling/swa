@@ -15,18 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.SimpleAdapter;
+
 import de.shop.R;
-import de.shop.ui.bestellung.Bestellungen;
 import de.shop.ui.bestellung.BestellungenNeu;
-import de.shop.ui.kunde.Kunden;
+import de.shop.ui.kunde.KundeDelete;
 import de.shop.ui.kunde.KundenSucheId;
 import de.shop.ui.kunde.KundenSucheNachname;
 
-public class MainNav extends ListFragment implements OnItemClickListener {
+public class MainNav extends ListFragment implements OnItemClickListener, OnMenuItemClickListener  {
 	public enum NavType {
 		KUNDEN(0),
 		BESTELLUNGEN(1);
@@ -50,8 +50,7 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 		}
 	}
 	
-	private static final String LOG_TAG = MainNav.class.getSimpleName();
-	
+	private static final String LOG_TAG = Main.class.getSimpleName();
 	private static final String ICON = "icon";
 	private static final String TEXT = "text";
 	private static final String[] FROM = { ICON, TEXT };
@@ -104,7 +103,7 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 	}
 
 	@Override
-	// Implementierung zum Interface OnItemClickListener
+	// Implementierung zum Interface OnItemClickListener fuer die Item-Liste
 	public void onItemClick(AdapterView<?> adapterView, View view, int itemPosition, long itemId) {
 		// view: TextView innerhalb von ListFragment
 		// itemPosition: Textposition innerhalb der Liste mit Zaehlung ab 0
@@ -135,51 +134,39 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 		}
 
 		popup.show();
-		
+	}
+	
+	@Override
+	// Implementierung zum Interface OnMenuItemClickListener fuer die Popup-Menues
+	public boolean onMenuItemClick(MenuItem item) {
 		Fragment neuesFragment;
-		switch (NavType.valueOf(itemPosition)) {
-			case KUNDEN:
-				neuesFragment = new Kunden();
+		switch (item.getItemId()) {
+			case R.id.kunden_suche_id:
+				neuesFragment = new KundenSucheId();
 				break;
 				
-			case BESTELLUNGEN:
-				neuesFragment = new Bestellungen();
+			case R.id.kunden_suche_nachname:
+				neuesFragment = new KundenSucheNachname();
 				break;
-				
+
+			case R.id.kunden_delete:
+				neuesFragment = new KundeDelete();
+				break;
+
+			case R.id.bestellungen_neu:
+				neuesFragment = new BestellungenNeu();
+				break;
+
 			default:
-				return;
+				return false;
 		}
-		
-		@Override
-		// Implementierung zum Interface OnMenuItemClickListener fuer die Popup-Menues
-		public boolean onMenuItemClick(MenuItem item) {
-			Fragment neuesFragment;
-			switch (item.getItemId()) {
-				case R.id.kunden_suche_id:
-					neuesFragment = new KundenSucheId();
-					break;
-					
-				case R.id.kunden_suche_nachname:
-					neuesFragment = new KundenSucheNachname();
-					break;
-					
-				case R.id.kunden_delete:
-					neuesFragment = new KundeDelete();
-					break;
-
-				case R.id.bestellungen_neu:
-					neuesFragment = new BestellungenNeu();
-					break;
-
-				default:
-					return false;
-			}
 		
 		// Kein Name (null) fuer die Transaktion, da die Klasse BackStageEntry nicht verwendet wird
 		getFragmentManager().beginTransaction()
 		                    .replace(R.id.details, neuesFragment)
 		                    .addToBackStack(null)  
 		                    .commit();
+		
 		return true;
 	}
 }
