@@ -3,9 +3,11 @@ package de.shop.ui.main;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import de.shop.R;
 
 public class Startseite extends Fragment {

@@ -2,8 +2,13 @@ package de.shop.ui.main;
 
 import static de.shop.util.Constants.KUNDE_KEY;
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -11,6 +16,10 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import de.shop.R;
 import de.shop.data.Kunde;
+import de.shop.service.BestellungService;
+import de.shop.service.BestellungService.BestellungServiceBinder;
+import de.shop.service.KundeService;
+import de.shop.service.KundeService.KundeServiceBinder;
 import de.shop.ui.kunde.KundeDetails;
 
 public class Main extends Activity implements OnClickListener {

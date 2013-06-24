@@ -10,6 +10,7 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,7 +21,10 @@ import android.widget.PopupMenu;
 import android.widget.SimpleAdapter;
 import de.shop.R;
 import de.shop.ui.bestellung.Bestellungen;
+import de.shop.ui.bestellung.BestellungenNeu;
 import de.shop.ui.kunde.Kunden;
+import de.shop.ui.kunde.KundenSucheId;
+import de.shop.ui.kunde.KundenSucheNachname;
 
 public class MainNav extends ListFragment implements OnItemClickListener {
 	public enum NavType {
@@ -157,6 +161,10 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 					
 				case R.id.kunden_suche_nachname:
 					neuesFragment = new KundenSucheNachname();
+					break;
+					
+				case R.id.kunden_delete:
+					neuesFragment = new KundeDelete();
 					break;
 
 				case R.id.bestellungen_neu:

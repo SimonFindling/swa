@@ -5,6 +5,7 @@ import static de.shop.util.Constants.MOCK_DEFAULT;
 import static de.shop.util.Constants.PATH_DEFAULT;
 import static de.shop.util.Constants.PORT_DEFAULT;
 import static de.shop.util.Constants.PROTOCOL_DEFAULT;
+import static de.shop.util.Constants.TIMEOUT_DEFAULT;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,6 +30,10 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 	public static String host;
 	public static String port;
 	public static String path;
+	private static String timeoutStr;
+	public static long timeout;
+	public static String username;
+	public static String password;
 	public static boolean mock;
 	
 	private static boolean initialized = false;
@@ -37,12 +42,18 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 	private static final String HOST_KEY = "host";
 	private static final String PORT_KEY = "port";
 	private static final String PATH_KEY = "path";
+	private static final String TIMEOUT_KEY = "timeout";
+	private static final String USERNAME_KEY = "username";
+	private static final String PASSWORD_KEY = "password";
 	private static final String MOCK_KEY = "mock";
 	
 	private ListPreference protocolPref;
 	private EditTextPreference hostPref;
 	private EditTextPreference portPref;
 	private EditTextPreference pathPref;
+	private EditTextPreference timeoutPref;
+	private EditTextPreference usernamePref;
+	private EditTextPreference passwordPref;
 	private CheckBoxPreference mockPref;
 	
 	@Override
@@ -70,6 +81,15 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 		pathPref = (EditTextPreference) findPreference(PATH_KEY);
 		pathPref.setOnPreferenceChangeListener(this);
 		
+		timeoutPref = (EditTextPreference) findPreference(TIMEOUT_KEY);
+		timeoutPref.setOnPreferenceChangeListener(this);
+		
+		usernamePref = (EditTextPreference) findPreference(USERNAME_KEY);
+		usernamePref.setOnPreferenceChangeListener(this);
+		
+		passwordPref = (EditTextPreference) findPreference(PASSWORD_KEY);
+		passwordPref.setOnPreferenceChangeListener(this);
+		
 		mockPref = (CheckBoxPreference) findPreference(MOCK_KEY);
 		mockPref.setOnPreferenceChangeListener(this);
 	}
@@ -80,7 +100,7 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 		}
 		
 		// Objekt der Klasse SharedPreferences laden, das die Default-Datei
-		// /data/data/de.shop.app/shared_prefs/de.shop_preferences.xml repraesentiert
+		// /data/data/de.shop/shared_prefs/de.shop_preferences.xml repraesentiert
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		
 		protocol = prefs.getString(PROTOCOL_KEY, PROTOCOL_DEFAULT);
@@ -88,11 +108,23 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 		port = prefs.getString(PORT_KEY, PORT_DEFAULT);
 		path = prefs.getString(PATH_KEY, PATH_DEFAULT);
 		
+		timeoutStr = prefs.getString(TIMEOUT_KEY, TIMEOUT_DEFAULT);
+		try {
+			timeout = Long.parseLong(timeoutStr);
+		}
+		catch (NumberFormatException e) {
+			timeout = Long.parseLong(TIMEOUT_DEFAULT);
+		}
+		
+		username = prefs.getString(USERNAME_KEY, "");
+		password = prefs.getString(PASSWORD_KEY, "");
+
 		mock = prefs.getBoolean(MOCK_KEY, MOCK_DEFAULT);
 		
 		initialized = true;
 		
-		Log.i(LOG_TAG, "protocol=" + protocol + ", host=" + host  + ", port=" + port + ", path=" + path + ", mock=" + mock);
+		Log.i(LOG_TAG, "protocol=" + protocol + ", host=" + host  + ", port=" + port + ", path=" + path
+				       + ", timeoutStr=" + timeoutStr + ", username=" + username + ", password=" + password + ", mock=" + mock);
 	}
 	
 	@Override
@@ -115,11 +147,35 @@ public class Prefs extends PreferenceFragment implements OnPreferenceChangeListe
 			path = (String) newValue;
 			editor.putString(PATH_KEY, path);
 		}
+		else if (preference.equals(timeoutPref)) {
+			timeoutStr = (String) newValue;
+			try {
+				timeout = Long.parseLong(timeoutStr);
+			}
+			catch (NumberFormatException e) {
+				timeout = Long.parseLong(TIMEOUT_DEFAULT);
+			}
+			editor.putString(TIMEOUT_KEY, timeoutStr);
+		}
+		else if (preference.equals(usernamePref)) {
+			username = (String) newValue;
+			editor.putString(USERNAME_KEY, username);
+		}
+		else if (preference.equals(passwordPref)) {
+			password = (String) newValue;
+			editor.putString(PASSWORD_KEY, password);
+		}
 		else if (preference.equals(mockPref)) {
 			mock = (Boolean) newValue;
 			editor.putBoolean(MOCK_KEY, mock);
 		}
 		editor.commit();
+		
+		// Fragment neu laden, damit die Aenderung sofort sichtbar ist
+		getFragmentManager().beginTransaction()
+                            .replace(R.id.details, new Prefs())
+                            .addToBackStack(null)
+                            .commit();
 		
 		return false;
 	}
