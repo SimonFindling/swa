@@ -1,5 +1,10 @@
 package de.shop.ui.main;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -11,7 +16,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
-
+import android.widget.PopupMenu;
+import android.widget.SimpleAdapter;
 import de.shop.R;
 import de.shop.ui.bestellung.Bestellungen;
 import de.shop.ui.kunde.Kunden;
@@ -82,8 +88,8 @@ public class MainNav extends ListFragment implements OnItemClickListener {
 			navList.add(navItem);
 		}
 		
-		final SimpleAdapter adapter = new SimpleAdapter(getActivity(), navList, R.layout.nav_item, FROM, TO);
-		return adapter;
+		final ListAdapter listAdapter = new SimpleAdapter(getActivity(), navList, R.layout.nav_item, FROM, TO);
+		return listAdapter;
     }
 	
 	@Override
