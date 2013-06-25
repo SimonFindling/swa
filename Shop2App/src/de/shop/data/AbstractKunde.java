@@ -45,8 +45,7 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 			                     .add("adresse", adresse.getJsonBuilderFactory())
 			                     .add("newsletter", newsletter)
 			                     .add("agbAkzeptiert", agbAkzeptiert)
-			                     .add("bestellungenUri", bestellungenUri)
-			                     .add("type", type);
+			                     .add("bestellungenUri", bestellungenUri);
 	}
 	
 	@Override

@@ -270,13 +270,8 @@ public class KundeEdit extends Fragment {
 		kunde.adresse.plz = edtPlz.getText().toString();
 		kunde.adresse.ort = edtOrt.getText().toString();
 		kunde.adresse.strasse = edtStrasse.getText().toString();
-		kunde.adresse.hausnr = edtHausnr.getText().toString();
-		
-		final GregorianCalendar cal = new GregorianCalendar(Locale.getDefault());
-		cal.set(dpSeit.getYear(), dpSeit.getMonth(), dpSeit.getDayOfMonth());
-		
+		kunde.adresse.hausnr = edtHausnr.getText().toString();		
 		kunde.kategorie = (short) npKategorie.getValue();
-		
 		kunde.newsletter = tglNewsletter.isChecked();
 		
 		if (kunde.getClass().equals(Privatkunde.class)) {

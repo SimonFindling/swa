@@ -3,9 +3,15 @@ package de.shop.data;
 import static de.shop.ShopApp.jsonBuilderFactory;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
+
+import android.util.Log;
 
 
 public class Bestellung implements JsonMappable, Serializable {
@@ -13,6 +19,7 @@ public class Bestellung implements JsonMappable, Serializable {
 	
 	public Long id;
 	public int version;
+	public Collection<Bestellposition> positionen;
 
 	public Bestellung() {
 		super();
@@ -35,6 +42,18 @@ public class Bestellung implements JsonMappable, Serializable {
 	public void fromJsonObject(JsonObject jsonObject) {
 		id = Long.valueOf(jsonObject.getJsonNumber("id").longValue());
 		version = jsonObject.getInt("version");
+		JsonArray jsonArray = jsonObject.getJsonArray("bestellpositionen");
+		positionen = new ArrayList<Bestellposition>();
+		
+		for (int i = 0; i < jsonArray.size(); i++) {
+			Log.d(Bestellung.class.getSimpleName(), jsonArray.toString());
+			
+			Bestellposition bp = new Bestellposition();
+			bp.fromJsonObject(jsonArray.getJsonObject(i));
+			
+			Log.d(Bestellung.class.getSimpleName(), bp.toString());
+			positionen.add(bp);
+		}
 	}
 	
 	@Override
