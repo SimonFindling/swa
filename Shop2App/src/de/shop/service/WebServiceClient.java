@@ -218,7 +218,7 @@ final class WebServiceClient {
     		}
     	}
     	
-		final Class<? extends T> clazz = classMap.get(jsonObject.getString("P"));
+		final Class<? extends T> clazz = classMap.get("P");
    		if (clazz == null) {
    			result.responseCode = HTTP_INTERNAL_ERROR;
    			return result;
