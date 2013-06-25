@@ -200,7 +200,6 @@ final class WebServiceClient {
     }
     
     static <T extends JsonMappable> HttpResponse<T> getJsonSingle(String path,
-    		                                                      String diskriminator,
     		                                                      Map<String, Class<? extends T>> classMap) {
     	final HttpResponse<T> result = getJson(path);
     	if (result.responseCode != HTTP_OK) {
@@ -219,7 +218,7 @@ final class WebServiceClient {
     		}
     	}
     	
-		final Class<? extends T> clazz = classMap.get(jsonObject.getString(diskriminator));
+		final Class<? extends T> clazz = classMap.get(jsonObject.getString("P"));
    		if (clazz == null) {
    			result.responseCode = HTTP_INTERNAL_ERROR;
    			return result;
@@ -280,7 +279,6 @@ final class WebServiceClient {
     }
 
     static <T extends JsonMappable> HttpResponse<T> getJsonList(String path,
-    		                                                    String diskriminator,
                                                                 Map<String, Class<? extends T>> classMap) {
     	final HttpResponse<T> result = getJson(path);
     	if (result.responseCode != HTTP_OK) {
@@ -302,9 +300,8 @@ final class WebServiceClient {
     	final ArrayList<T> resultList = new ArrayList<T>(jsonArray.size());
     	final List<JsonObject> jsonObjectList = jsonArray.getValuesAs(JsonObject.class);
     	for (JsonObject jsonObject : jsonObjectList) {
-    		final String disriminatorValue = jsonObject.getString(diskriminator);
 
-	    	final Class<? extends T> clazz = classMap.get(disriminatorValue);
+	    	final Class<? extends T> clazz = classMap.get("P");
     		T object;
         	try {
     			object = clazz.newInstance();

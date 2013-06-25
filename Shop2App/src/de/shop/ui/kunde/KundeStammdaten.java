@@ -86,9 +86,6 @@ public class KundeStammdaten extends Fragment implements OnTouchListener {
 	    	txtHausnr.setText(kunde.adresse.hausnr);
     	}
     	
-    	final TextView txtSeit = (TextView) view.findViewById(R.id.seit);
-		final String seitStr = DateFormat.getDateFormat(view.getContext()).format(kunde.seit);
-    	txtSeit.setText(seitStr);
     	
     	final ToggleButton tglNewsletter = (ToggleButton) view.findViewById(R.id.newsletter);
     	tglNewsletter.setChecked(kunde.newsletter);
@@ -119,26 +116,6 @@ public class KundeStammdaten extends Fragment implements OnTouchListener {
 	    	
 	    	if (privatkunde.familienstand != null) {
 	    		spFamilienstand.setSelection(privatkunde.familienstand.value());
-	    	}
-	    	
-	    	if (privatkunde.hobbies != null) {
-		    	for (HobbyType h : privatkunde.hobbies) {
-		    		switch (h) {
-		    			case SPORT: 
-		    		    	cbHobbiesSport.setChecked(true);
-		    		    	break;
-		    		    	
-		    			case LESEN: 
-		    		    	cbHobbiesLesen.setChecked(true);
-		    		    	break;
-		    		    	
-		    			case REISEN:
-		    		    	cbHobbiesReisen.setChecked(true);
-		    		    	break;
-		    		    	
-		    		    default:
-		    		}
-		    	}
 	    	}
     	}
     	else {

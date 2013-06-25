@@ -9,6 +9,9 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+
+import android.util.Log;
 
 
 public class Privatkunde extends AbstractKunde {
@@ -16,7 +19,6 @@ public class Privatkunde extends AbstractKunde {
 
 	public GeschlechtType geschlecht;
 	public FamilienstandType familienstand;
-	public Collection<HobbyType> hobbies;
 
 	@Override
 	protected JsonObjectBuilder getJsonObjectBuilder() {
@@ -24,33 +26,26 @@ public class Privatkunde extends AbstractKunde {
 				                                         .add("geschlecht", geschlecht.toString())
 			                                             .add("familienstand", familienstand.toString());
 		
-		final JsonArrayBuilder jsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
-		for (HobbyType hobby : hobbies) {
-			jsonArrayBuilder.add(hobby.toString());
-		}
-		jsonObjectBuilder.add("hobbies", jsonArrayBuilder);
-		
 		return jsonObjectBuilder;
 	}
 	
 	@Override
 	public void fromJsonObject(JsonObject jsonObject) {
-		super.fromJsonObject(jsonObject);
+		super.fromJsonObject(jsonObject);		
 		
-		geschlecht = GeschlechtType.valueOf(jsonObject.getString("geschlecht"));
-		familienstand = FamilienstandType.valueOf(jsonObject.getString("familienstand"));
-		
-		final JsonArray jsonArray = jsonObject.getJsonArray("hobbies");
-		final int anzahl = jsonArray.size();
-		hobbies = new HashSet<HobbyType>(HobbyType.values().length, 1);
-		for (int i = 0; i < anzahl; i++) {
-			hobbies.add(HobbyType.valueOf(jsonArray.getString(i)));
+		try {
+			geschlecht = GeschlechtType.valueOf(jsonObject.getString("geschlecht"));
+			familienstand = FamilienstandType.valueOf(jsonObject.getString("familienstand"));	
+		}
+		catch(ClassCastException e) {
+			geschlecht = null;
+			familienstand = null;
 		}
 	}
 	
 	@Override
 	public String toString() {
 		return "Privatkunde [" + super.toString() + ", geschlecht=" + geschlecht
-				+ ", familienstand=" + familienstand + ", hobbies=" + hobbies + "]";
+				+ ", familienstand=" + familienstand + "]";
 	}
 }

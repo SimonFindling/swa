@@ -22,16 +22,15 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 	public int version;
 	public String nachname;
 	public String vorname;
-	public BigDecimal umsatz;
+	public BigDecimal umsatz = BigDecimal.valueOf(0.0);
 	public BigDecimal rabatt;
 	public short kategorie;
 	public String email;
 	public Adresse adresse;
 	public boolean newsletter;
 	public boolean agbAkzeptiert = true;
-	public Date seit;
 	public String bestellungenUri;
-	public String type;
+	public String type="P";
 
 	
 	protected JsonObjectBuilder getJsonObjectBuilder() {
@@ -40,14 +39,12 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 			                     .add("version", version)
 			                     .add("nachname", nachname)
 			                     .add("vorname", vorname)
-			                     .add("umsatz", umsatz)
 			                     .add("rabatt", rabatt)
 			                     .add("kategorie", kategorie)
 			                     .add("email", email)
 			                     .add("adresse", adresse.getJsonBuilderFactory())
 			                     .add("newsletter", newsletter)
 			                     .add("agbAkzeptiert", agbAkzeptiert)
-			                     .add("seit", new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(seit))
 			                     .add("bestellungenUri", bestellungenUri)
 			                     .add("type", type);
 	}
@@ -62,7 +59,6 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 	    version = jsonObject.getInt("version");
 		nachname = jsonObject.getString("nachname");
 		vorname = jsonObject.getString("vorname");
-		umsatz = jsonObject.getJsonNumber("umsatz").bigDecimalValue();
 		rabatt = jsonObject.getJsonNumber("rabatt").bigDecimalValue();
 	    kategorie = (short) jsonObject.getInt("kategorie");
 		email = jsonObject.getString("email");
@@ -70,14 +66,8 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 		adresse.fromJsonObject(jsonObject.getJsonObject("adresse"));
 		newsletter = jsonObject.getBoolean("newsletter");
 		agbAkzeptiert = jsonObject.getBoolean("agbAkzeptiert");
-		try {
-			seit = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).parse(jsonObject.getString("seit"));
-		}
-		catch (ParseException e) {
-			throw new InternalShopError(e.getMessage(), e);
-		};
 		bestellungenUri = jsonObject.getString("bestellungenUri");
-		type = jsonObject.getString("type");
+		type = "P";
 	}
 	
 	@Override
@@ -115,7 +105,7 @@ public abstract class AbstractKunde implements JsonMappable, Serializable {
 		return "AbstractKunde [id=" + id + ", nachname=" + nachname + ", vorname="
 				+ vorname + ", umsatz=" + umsatz + ", rabatt=" + rabatt
 				+ ", email=" + email + ", adresse=" + adresse
-				+ ", newsletter=" + newsletter  + ", seit=" + seit
+				+ ", newsletter=" + newsletter  
 				+ ", bestellungenUri=" + bestellungenUri + "]";
 	}
 }

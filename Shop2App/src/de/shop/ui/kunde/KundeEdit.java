@@ -107,14 +107,6 @@ public class KundeEdit extends Fragment {
     	edtHausnr = (EditText) view.findViewById(R.id.hausnr_edt);
     	edtHausnr.setText(kunde.adresse.hausnr);
     	
-    	dpSeit = (DatePicker) view.findViewById(R.id.seit);
-    	final GregorianCalendar cal = new GregorianCalendar(Locale.getDefault());
-    	cal.setTime(kunde.seit);
-    	final int jahr = cal.get(YEAR);
-    	final int monat = cal.get(MONTH);
-    	final int tag = cal.get(DAY_OF_MONTH);
-    	dpSeit.init(jahr, monat, tag, null);
-    	
     	npKategorie = (NumberPicker) view.findViewById(R.id.kategorie);
     	npKategorie.setMinValue(MIN_KATEGORIE);
     	npKategorie.setMaxValue(MAX_KATEGORIE);
@@ -167,26 +159,6 @@ public class KundeEdit extends Fragment {
 				    	
 				    default:
 				}
-	    	}
-	    	
-	    	if (privatkunde.hobbies != null) {
-		    	for (HobbyType h : privatkunde.hobbies) {
-		    		switch (h) {
-		    			case SPORT: 
-		    		    	cbHobbiesSport.setChecked(true);
-		    		    	break;
-		    		    	
-		    			case LESEN: 
-		    		    	cbHobbiesLesen.setChecked(true);
-		    		    	break;
-		    		    	
-		    			case REISEN:
-		    		    	cbHobbiesReisen.setChecked(true);
-		    		    	break;
-		    		    	
-		    		    default:
-		    		}
-		    	}
 	    	}
     	}
     	else {
@@ -302,7 +274,6 @@ public class KundeEdit extends Fragment {
 		
 		final GregorianCalendar cal = new GregorianCalendar(Locale.getDefault());
 		cal.set(dpSeit.getYear(), dpSeit.getMonth(), dpSeit.getDayOfMonth());
-		kunde.seit = cal.getTime();
 		
 		kunde.kategorie = (short) npKategorie.getValue();
 		
@@ -322,24 +293,6 @@ public class KundeEdit extends Fragment {
 			
 			final int familienstandPos = spFamilienstand.getSelectedItemPosition();
 			privatkunde.familienstand = FamilienstandType.valueOf(familienstandPos);
-			
-			Collection<HobbyType> hobbies = privatkunde.hobbies;
-			if (hobbies != null) {
-				hobbies.clear();
-			}
-			else {
-				privatkunde.hobbies = new ArrayList<HobbyType>();
-				hobbies = privatkunde.hobbies;
-			}
-			if (cbHobbiesSport.isChecked()) {
-				hobbies.add(HobbyType.SPORT);
-			}
-			if (cbHobbiesLesen.isChecked()) {
-				hobbies.add(HobbyType.LESEN);
-			}
-			if (cbHobbiesReisen.isChecked()) {
-				hobbies.add(HobbyType.REISEN);
-			}
 		}
 
 		Log.d(LOG_TAG, kunde.toString());

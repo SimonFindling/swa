@@ -88,7 +88,7 @@ public class KundeService extends Service {
 		    		Log.v(LOG_TAG, "path = " + path);
 		    		final HttpResponse<AbstractKunde> result = mock
 		    				                                   ? Mock.sucheKundeById(id)
-		    				                                   : WebServiceClient.getJsonSingle(path, TYPE, CLASS_MAP);
+		    				                                   : WebServiceClient.getJsonSingle(path, CLASS_MAP);
 
 					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
 					return result;
@@ -143,7 +143,7 @@ public class KundeService extends Service {
 					Log.v(LOG_TAG, "path = " + path);
 		    		final HttpResponse<AbstractKunde> result = mock
 		    				                                   ? Mock.sucheKundenByNachname(nachname)
-		    				                                   : WebServiceClient.getJsonList(path, TYPE, CLASS_MAP);
+		    				                                   : WebServiceClient.getJsonList(path, CLASS_MAP);
 					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
 					return result;
 				}

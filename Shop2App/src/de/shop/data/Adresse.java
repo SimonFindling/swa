@@ -11,7 +11,6 @@ import javax.json.JsonObjectBuilder;
 public class Adresse implements JsonMappable, Serializable {
 	private static final long serialVersionUID = -4218760204888865981L;
 	
-	public int version;
 	public String plz;
 	public String ort;
 	public String strasse;
@@ -32,7 +31,6 @@ public class Adresse implements JsonMappable, Serializable {
 	// fuer AbstractKunde.toJsonObject()
 	JsonObjectBuilder getJsonBuilderFactory() {
 		return jsonBuilderFactory.createObjectBuilder()
-		                         .add("version", version)
 		                         .add("plz", plz)
 		                         .add("ort", ort)
 		                         .add("strasse", strasse)
@@ -45,17 +43,16 @@ public class Adresse implements JsonMappable, Serializable {
 	}
 	
 	@Override
+	public void updateVersion() {
+		return;
+	};
+	
+	@Override
 	public void fromJsonObject(JsonObject jsonObject) {		
-		version = jsonObject.getInt("version");
 		plz = jsonObject.getString("plz");
 		ort = jsonObject.getString("ort");
 		strasse = jsonObject.getString("strasse");
 		hausnr = jsonObject.getString("hausnr");
-	}
-	
-	@Override
-	public void updateVersion() {
-		version++;
 	}
 
 	@Override
