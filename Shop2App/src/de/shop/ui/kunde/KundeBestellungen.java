@@ -174,7 +174,5 @@ public class KundeBestellungen extends Fragment implements OnItemClickListener, 
 		}
 		
 		txtBestellungId.setText(String.valueOf(bestellung.id));
-		final String datumStr = bestellung.datum == null ? "" : DateFormat.getDateFormat(getActivity()).format(bestellung.datum);
-    	txtBestellungDatum.setText(datumStr);
 	}
 }
