@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -18,7 +17,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -26,7 +24,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import de.shop.R;
 import de.shop.data.AbstractKunde;
-import de.shop.data.HobbyType;
 import de.shop.data.Privatkunde;
 import de.shop.ui.main.Prefs;
 import de.shop.util.WischenListener;
@@ -93,9 +90,6 @@ public class KundeStammdaten extends Fragment implements OnTouchListener {
     	final RadioButton rbMaennlich = (RadioButton) view.findViewById(R.id.maennlich);
     	final RadioButton rbWeiblich = (RadioButton) view.findViewById(R.id.weiblich);
     	final Spinner spFamilienstand = (Spinner) view.findViewById(R.id.familienstand);
-    	final CheckBox cbHobbiesSport = (CheckBox) view.findViewById(R.id.sport);
-    	final CheckBox cbHobbiesLesen = (CheckBox) view.findViewById(R.id.lesen);
-    	final CheckBox cbHobbiesReisen = (CheckBox) view.findViewById(R.id.reisen);
     	
     	if (kunde.getClass().equals(Privatkunde.class)) {
     		final Privatkunde privatkunde = (Privatkunde) kunde;
@@ -122,9 +116,6 @@ public class KundeStammdaten extends Fragment implements OnTouchListener {
     		rbMaennlich.setEnabled(false);
     		rbWeiblich.setEnabled(false);
     		spFamilienstand.setEnabled(false);
-    		cbHobbiesSport.setEnabled(false);
-    		cbHobbiesLesen.setEnabled(false);
-    		cbHobbiesReisen.setEnabled(false);
     	}
 	}
 

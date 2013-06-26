@@ -35,7 +35,6 @@ import de.shop.util.InternalShopError;
 
 public class KundeService extends Service {
 	private static final String LOG_TAG = KundeService.class.getSimpleName();
-	private static final String TYPE = "type";
 	private static final Map<String, Class<? extends AbstractKunde>> CLASS_MAP;
 	
 	private KundeServiceBinder binder = new KundeServiceBinder();

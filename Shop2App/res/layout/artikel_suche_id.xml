@@ -6,13 +6,13 @@
     tools:context=".ui.main.Main" >
 	
 	<AutoCompleteTextView
-	    android:id="@+id/kunde_id_auto"
+	    android:id="@+id/artikel_id_auto"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:completionHint="@string/k_kunde_id_auswahl_hint"
+	    android:completionHint="@string/a_artikel_id_auswahl_hint"
 	    android:completionThreshold="1"
-	    android:hint="@string/k_kunde_id_hint"
-	    android:imeActionId="@+id/ime_suchen"
+	    android:hint="@string/a_artikel_id_hint"
+	    android:imeActionId="@+id/ime_suchen_artikel"
         android:imeActionLabel="@string/s_action_suchen_short"
         android:imeOptions="actionUnspecified"
 	    android:inputType="number"
@@ -23,7 +23,7 @@
 	</AutoCompleteTextView>
 	
 	<Button
-		android:id="@+id/btn_suchen_kunde"
+		android:id="@+id/btn_suchen_artikel"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="50dp"

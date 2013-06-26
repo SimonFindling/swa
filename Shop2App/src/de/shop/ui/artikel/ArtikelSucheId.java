@@ -1,7 +1,7 @@
-package de.shop.ui.kunde;
+package de.shop.ui.artikel;
 
 import static android.view.inputmethod.EditorInfo.IME_NULL;
-import static de.shop.util.Constants.KUNDE_KEY;
+import static de.shop.util.Constants.ARTIKEL_KEY;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 import java.util.Collections;
@@ -26,32 +26,31 @@ import android.widget.Filter;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import de.shop.R;
-import de.shop.data.AbstractKunde;
+import de.shop.data.Artikel;
 import de.shop.service.HttpResponse;
 import de.shop.ui.main.Main;
 import de.shop.ui.main.Prefs;
 
-public class KundeSucheId extends Fragment implements OnClickListener, OnEditorActionListener {
+public class ArtikelSucheId extends Fragment implements OnClickListener, OnEditorActionListener {
 	
-	private AutoCompleteTextView kundeIdTxt;
+	private AutoCompleteTextView artikelIdTxt;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 		// attachToRoot = false, weil die Verwaltung des Fragments durch die Activity erfolgt
-		return inflater.inflate(R.layout.kunden_suche_id, container, false);
+		return inflater.inflate(R.layout.artikel_suche_id, container, false);
 	}
 	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		kundeIdTxt = (AutoCompleteTextView) view.findViewById(R.id.kunde_id_auto);
-		final ArrayAdapter<Long> adapter = new AutoCompleteIdAdapter(kundeIdTxt.getContext());
-    	kundeIdTxt.setAdapter(adapter);
-    	kundeIdTxt.setOnEditorActionListener(this);
-    	
-		// KundeSucheId (this) ist gleichzeitig der Listener, wenn der Suchen-Button angeklickt wird
+		artikelIdTxt = (AutoCompleteTextView) view.findViewById(R.id.artikel_id_auto);
+		final ArrayAdapter<Long> adapter = new AutoCompleteIdAdapter(artikelIdTxt.getContext());
+    	artikelIdTxt.setAdapter(adapter);
+    	artikelIdTxt.setOnEditorActionListener(this);
+		// ArtikelSucheId (this) ist gleichzeitig der Listener, wenn der Suchen-Button angeklickt wird
 		// und implementiert deshalb die Methode onClick() unten
-    	view.findViewById(R.id.btn_suchen_kunde).setOnClickListener(this);
+    	view.findViewById(R.id.btn_suchen_artikel).setOnClickListener(this);
     	
 	    // Evtl. vorhandene Tabs der ACTIVITY loeschen
     	final ActionBar actionBar = getActivity().getActionBar();
@@ -84,7 +83,7 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
 	@Override // OnClickListener
 	public void onClick(View view) {
 		switch (view.getId()) {
-			case R.id.btn_suchen_kunde:
+			case R.id.btn_suchen_artikel:
 				suchen(view);
 				break;
 				
@@ -96,27 +95,27 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
 	private void suchen(View view) {
 		final Context ctx = view.getContext();
 
-		final String kundeIdStr = kundeIdTxt.getText().toString();
-		if (TextUtils.isEmpty(kundeIdStr)) {
-			kundeIdTxt.setError(getString(R.string.k_kundennr_fehlt));
+		final String artikelIdStr = artikelIdTxt.getText().toString();
+		if (TextUtils.isEmpty(artikelIdStr)) {
+			artikelIdTxt.setError(getString(R.string.a_id_fehlt));
     		return;
     	}
 		
-		final Long kundeId = Long.valueOf(kundeIdStr);
+		final Long artikelId = Long.valueOf(artikelIdStr);
 		final Main mainActivity = (Main) getActivity();
-		final HttpResponse<? extends AbstractKunde> result = mainActivity.getKundeServiceBinder().sucheKundeById(kundeId, ctx);
+		final HttpResponse<? extends Artikel> result = mainActivity.getArtikelServiceBinder().sucheArtikelById(artikelId, ctx);
 
 		if (result.responseCode == HTTP_NOT_FOUND) {
-			final String msg = getString(R.string.k_kunde_not_found, kundeIdStr);
-			kundeIdTxt.setError(msg);
+			final String msg = getString(R.string.a_artikel_not_found, artikelIdStr);
+			artikelIdTxt.setError(msg);
 			return;
 		}
 		
-		final AbstractKunde kunde = result.resultObject;
+		final Artikel artikel = result.resultObject;
 		final Bundle args = new Bundle(1);
-		args.putSerializable(KUNDE_KEY, kunde);
+		args.putSerializable(ARTIKEL_KEY, artikel);
 		
-		final Fragment neuesFragment = new KundeDetails();
+		final Fragment neuesFragment = new ArtikelDetails();
 		neuesFragment.setArguments(args);
 		
 		// Kein Name (null) fuer die Transaktion, da die Klasse BackStageEntry nicht verwendet wird
@@ -128,7 +127,7 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
 	
 	@Override  // OnEditorActionListener
 	public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-		if (actionId == R.id.ime_suchen || actionId == IME_NULL) {
+		if (actionId == R.id.ime_suchen_artikel || actionId == IME_NULL) {
 			suchen(view);
 			return true;
 		}
@@ -136,7 +135,7 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
 		return false;
 	}
 	
-    // Fuer die Verwendung von AutoCompleteTextView in der Methode onViewCreated()
+	// Fuer die Verwendung von AutoCompleteTextView in der Methode onViewCreated()
     private class AutoCompleteIdAdapter extends ArrayAdapter<Long> {
     	private LayoutInflater inflater;
      
@@ -168,7 +167,6 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
     				List<Long> idList = null;
     				if (constraint != null) {
     					// Liste der IDs, die den bisher eingegebenen Praefix (= constraint) enthalten
-    					idList = sucheIds((String) constraint);
     				}
     				if (idList == null) {
     					// Leere Liste, falls keine IDs zum eingegebenen Praefix gefunden werden
@@ -182,11 +180,6 @@ public class KundeSucheId extends Fragment implements OnClickListener, OnEditorA
     				return filterResults;
     			}
     			
-    	    	private List<Long> sucheIds(String idPrefix) {
-    	    		final Main mainActivity = (Main) getActivity();
-    				final List<Long> ids = mainActivity.getKundeServiceBinder().sucheIds(idPrefix);
-    				return ids;
-    	    	}
      
     			@Override
     			protected void publishResults(CharSequence contraint, FilterResults results) {

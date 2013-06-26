@@ -118,22 +118,6 @@
 	        </RelativeLayout>
 	
 	    </TableRow>
-	    
-	    <TableRow>
-	    	
-	    	<TextView
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:text="@string/k_seit" />
-	    	
-	    	<TextView
-	        	style="@style/RechteSpalteText"
-	            android:id="@+id/seit"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:textIsSelectable="false" />
-	    	
-	   	</TableRow>
 
 	    <TableRow>
 	    
@@ -197,42 +181,6 @@
 		    	android:entryValues="@array/a_familienstand_enum" />
 		    
 		</TableRow>
-	
-	    <TableRow>
-	    	<TextView
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:text="@string/k_hobbies" />
-	    	
-	    	<LinearLayout
-	    		android:orientation="vertical"
-	    		android:layout_width="wrap_content"
-	    		android:layout_height="wrap_content">
-	
-			    <CheckBox
-			    	android:id="@+id/sport"
-			    	android:layout_width="wrap_content"
-			    	android:layout_height="wrap_content"
-			    	android:clickable="false"
-			    	android:text="@string/k_sport" />
-			    
-			    <CheckBox
-			    	android:id="@+id/lesen"
-			    	android:layout_width="wrap_content"
-			    	android:layout_height="wrap_content"
-			    	android:clickable="false"
-			    	android:text="@string/k_lesen" />
-			    
-			    <CheckBox
-			    	android:id="@+id/reisen"
-			    	android:layout_width="wrap_content"
-			    	android:layout_height="wrap_content"
-			    	android:clickable="false"
-			    	android:text="@string/k_reisen" />
-	
-	    	</LinearLayout>
-	    	
-	    </TableRow>
 	
 	</TableLayout>
 

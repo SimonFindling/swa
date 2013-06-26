@@ -13,8 +13,8 @@ public class Artikel implements Serializable, JsonMappable {
 	public Long id;
 	public int version;
 	public String bezeichnung;
-	public double preis;
-	public boolean verfuegbar;
+	public Double preis;
+	public Boolean verfuegbar;
 	
 	public Artikel() {
 		super();
