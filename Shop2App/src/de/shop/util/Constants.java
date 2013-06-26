@@ -2,6 +2,7 @@ package de.shop.util;
 
 public final class Constants {
 	public static final String KUNDE_KEY = "kunde";
+	public static final String ARTIKEL_KEY = "artikel";
 	public static final String KUNDEN_KEY = "kunden";
 	
 	public static final int WISCHEN_MIN_DISTANCE = 30;        // Min. Laenge des Wischens in Pixel
@@ -17,6 +18,7 @@ public final class Constants {
 	public static final String KUNDEN_ID_PREFIX_PATH = KUNDEN_PREFIX_PATH + "/id";
 	public static final String NACHNAME_PREFIX_PATH = KUNDEN_PREFIX_PATH + "/nachname";
 	public static final String BESTELLUNGEN_PATH = "/bestellungen";
+	public static final String ARTIKEL_PATH = "/artikel";
 	
 	public static final short MIN_KATEGORIE = 1;
 	public static final short MAX_KATEGORIE = 9;
