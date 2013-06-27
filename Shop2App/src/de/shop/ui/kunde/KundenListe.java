@@ -13,17 +13,19 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-
 import de.shop.R;
 import de.shop.data.AbstractKunde;
+import de.shop.service.ArtikelService;
 import de.shop.service.BestellungService;
 import de.shop.service.KundeService;
+import de.shop.service.ArtikelService.ArtikelServiceBinder;
 import de.shop.service.BestellungService.BestellungServiceBinder;
 import de.shop.service.KundeService.KundeServiceBinder;
 
 public class KundenListe extends Activity {
 	private KundeServiceBinder kundeServiceBinder;
 	private BestellungServiceBinder bestellungServiceBinder;
+	private ArtikelServiceBinder artikelServiceBinder;
 	
 	// ServiceConnection ist ein Interface: anonyme Klasse verwenden, um ein Objekt davon zu erzeugen
 	private ServiceConnection kundeServiceConnection = new ServiceConnection() {
@@ -35,6 +37,18 @@ public class KundenListe extends Activity {
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			kundeServiceBinder = null;
+		}
+	};
+	
+	private ServiceConnection artikelServiceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
+			artikelServiceBinder = (ArtikelServiceBinder) serviceBinder;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			artikelServiceBinder = null;
 		}
 	};
 	
@@ -103,6 +117,9 @@ public class KundenListe extends Activity {
 		
 		intent = new Intent(this, BestellungService.class);
 		bindService(intent, bestellungServiceConnection, Context.BIND_AUTO_CREATE);
+		
+		intent = new Intent(this, ArtikelService.class);
+		bindService(intent, artikelServiceConnection, Context.BIND_AUTO_CREATE);
     }
     
 	@Override
@@ -111,6 +128,7 @@ public class KundenListe extends Activity {
 		
 		unbindService(kundeServiceConnection);
 		unbindService(bestellungServiceConnection);
+		unbindService(artikelServiceConnection);
 	}
 
 	public KundeServiceBinder getKundeServiceBinder() {
@@ -119,5 +137,9 @@ public class KundenListe extends Activity {
 
 	public BestellungServiceBinder getBestellungServiceBinder() {
 		return bestellungServiceBinder;
+	}
+	
+	public ArtikelServiceBinder getArtikelServiceBinder() {
+		return artikelServiceBinder;
 	}
 }

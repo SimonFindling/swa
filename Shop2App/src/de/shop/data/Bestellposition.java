@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import de.shop.service.ArtikelService;
 import static de.shop.ShopApp.jsonBuilderFactory;
 
 public class Bestellposition implements JsonMappable, Serializable{
@@ -13,7 +14,7 @@ public class Bestellposition implements JsonMappable, Serializable{
 	public Long id;
 	public int version;
 	public int anzahl;
-	public Artikel artikel;
+	public String artikelUri;
 	
 	public Bestellposition() {
 		super();
@@ -45,6 +46,7 @@ public class Bestellposition implements JsonMappable, Serializable{
 		id = Long.valueOf(jsonObject.getJsonNumber("id").longValue());
 		version = jsonObject.getInt("version");
 		anzahl = jsonObject.getInt("anzahl");
+		artikelUri = jsonObject.getString("artikelUri");
 	}
 	
 	public void updateVersion() {

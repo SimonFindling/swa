@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -19,7 +20,7 @@ public class Bestellung implements JsonMappable, Serializable {
 	
 	public Long id;
 	public int version;
-	public Collection<Bestellposition> positionen;
+	public List<Bestellposition> positionen;
 
 	public Bestellung() {
 		super();

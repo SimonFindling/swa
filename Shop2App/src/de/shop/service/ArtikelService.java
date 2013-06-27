@@ -25,6 +25,14 @@ public class ArtikelService extends Service {
 
 	private final ArtikelServiceBinder binder = new ArtikelServiceBinder();
 
+	public static Artikel getArtikel(String artikelUri) {
+		HttpResponse<Artikel> artikel = WebServiceClient.getJsonSingle(artikelUri, Artikel.class);
+		
+		Log.d(LOG_TAG, artikel.resultObject.toString());
+		return artikel.resultObject;
+	}
+	
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return binder;
