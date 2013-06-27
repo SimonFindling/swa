@@ -1,27 +1,19 @@
 package de.shop.ui.artikel;
 
 import static de.shop.util.Constants.ARTIKEL_KEY;
-import static de.shop.util.Constants.KUNDE_KEY;
-import de.shop.ui.kunde.KundeEdit;
-import de.shop.ui.kunde.KundeStammdaten;
 import de.shop.ui.main.Prefs;
-import de.shop.util.WischenListener;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.GestureDetector.OnGestureListener;
-import android.view.View.OnTouchListener;
 import android.widget.SearchView;
 import android.widget.TextView;
 import de.shop.R;

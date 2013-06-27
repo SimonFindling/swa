@@ -3,12 +3,7 @@ package de.shop.ui.artikel;
 import static android.app.ActionBar.NAVIGATION_MODE_TABS;
 import static de.shop.util.Constants.ARTIKEL_KEY;
 
-import java.io.Serializable;
 
-import de.shop.ui.kunde.KundeBestellungen;
-import de.shop.ui.kunde.KundeDetails;
-import de.shop.ui.kunde.KundeKarte;
-import de.shop.ui.kunde.KundeStammdaten;
 import de.shop.util.TabListener;
 import de.shop.data.Artikel;
 import android.app.ActionBar;

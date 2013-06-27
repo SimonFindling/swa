@@ -39,6 +39,8 @@
     <string name="k_hint_kundenname">Kundenname</string>
     <string name="k_kunde_not_found">Kein Kunde mit Nr. %s gefunden.</string>
     <string name="k_kunden_not_found">Keine Kunden mit Nachname %s gefunden.</string>
+    <string name="k_bestellposition_anzahl">Anzahl</string>
+    <string name="k_bestellposition_id">Position %d</string>
     
     <string-array name="k_familienstand_entries">
        	<item>Ledig</item>

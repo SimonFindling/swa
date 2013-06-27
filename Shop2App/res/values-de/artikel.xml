@@ -9,4 +9,10 @@
 	<string name="a_stammdaten">Stammdaten</string>
 	<string name="a_preis">Preis</string>
 	<string name="a_verfuegbar">Verfügbar</string>
+	<string name="a_bezeichnung_auswahl_hint">Wählen sie eine Bezeichnung aus</string>
+	<string name="a_bezeichnung_hint">Bezeichnung eingeben</string>
+	<string name="a_bezeichnung_fehlt">Die Bezeichnung fehlt.</string>
+	<string name="a_artikel_liste_title">Gefundene Artikel</string>
+	<string name="a_hint_artikelname">Artikelname</string>
+	
 </resources>

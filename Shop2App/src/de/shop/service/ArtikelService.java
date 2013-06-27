@@ -3,7 +3,11 @@ package de.shop.service;
 import static de.shop.ui.main.Prefs.mock;
 import static de.shop.ui.main.Prefs.timeout;
 import static de.shop.util.Constants.ARTIKEL_PATH;
+import static de.shop.util.Constants.BEZEICHNUNG_PATH;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
+
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
@@ -80,6 +84,48 @@ public class ArtikelService extends Service {
 			}
 	    	
 	    	return result;
+		}
+		
+		public HttpResponse<Artikel> sucheArtikelByBezeichnung(String bezeichnung, final Context ctx) {
+			
+			final AsyncTask<String, Void, HttpResponse<Artikel>> sucheArtikelByBezeichnungTask = new AsyncTask<String, Void, HttpResponse<Artikel>>() {
+				@Override
+	    		protected void onPreExecute() {
+					progressDialog = showProgressDialog(ctx);
+				}
+				
+				@Override
+				// Neuer Thread, damit der UI-Thread nicht blockiert wird
+				protected HttpResponse<Artikel> doInBackground(String... bezeichnungen) {
+					final String bezeichnung = bezeichnungen[0];
+					final String path = BEZEICHNUNG_PATH + bezeichnung;
+					Log.v(LOG_TAG, "path = " + path);
+		    		final HttpResponse<Artikel> result = WebServiceClient.getJsonList(path, Artikel.class);
+					Log.d(LOG_TAG + ".AsyncTask", "doInBackground: " + result);
+					return result;
+				}
+				
+				@Override
+	    		protected void onPostExecute(HttpResponse<Artikel> unused) {
+					progressDialog.dismiss();
+	    		}
+			};
+			
+			sucheArtikelByBezeichnungTask.execute(bezeichnung);
+			HttpResponse<Artikel> result = null;
+			try {
+				result = sucheArtikelByBezeichnungTask.get(timeout, SECONDS);
+			}
+	    	catch (Exception e) {
+	    		throw new InternalShopError(e.getMessage(), e);
+			}
+
+	    	if (result.responseCode != HTTP_OK) {
+	    		return result;
+	    	}
+	    	
+	    	// URLs fuer Emulator anpassen
+			return result;
 		}
 	}
 }

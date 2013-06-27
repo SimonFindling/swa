@@ -2,4 +2,13 @@
     <item
     	android:id="@+id/artikel_suche_id"
         android:title="@string/s_artikel_suche_id"/>
+    
+    <item
+    	android:id="@+id/artikel_suche_bezeichnung"
+        android:title="@string/s_artikel_suche_bezeichnung" />
+    
+     <item
+    	android:id="@+id/artikel_create"
+        android:title="@string/s_artikel_create" />
+     
 </menu>

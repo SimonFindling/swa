@@ -50,6 +50,17 @@
 		</activity>
 		
 		<activity
+			android:name=".ui.artikel.ArtikelListe"
+			android:label="@string/a_artikel_liste_title"
+			android:parentActivityName=".ui.main.Main"
+			android:exported="false" >
+			
+			<meta-data 
+				android:name="android.app.default_searchable"
+				android:value="ui.artikel.SucheBezeichnungActivity"/>
+		</activity>
+		
+		<activity
 			android:name=".ui.main.SucheIdActivity"
 			android:exported="false" >
 			
@@ -67,6 +78,22 @@
 		
 		<activity
 			android:name=".ui.kunde.SucheNachnameActivity"
+			android:exported="false" >
+			
+			<!-- Activity als "searchable" deklarieren -->
+			<intent-filter>
+	            <action android:name="android.intent.action.SEARCH" />
+	            <category android:name="android.intent.category.DEFAULT" />
+	        </intent-filter>
+			
+			<!-- Weitere Konfiguration fuer die Suche durch diese Activity -->
+			<meta-data
+	            android:name="android.app.searchable"
+	            android:resource="@xml/searchable_nachname" />
+		</activity>
+		
+		<activity
+			android:name=".ui.artikel.SucheBezeichnungActivity"
 			android:exported="false" >
 			
 			<!-- Activity als "searchable" deklarieren -->

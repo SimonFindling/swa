@@ -8,14 +8,7 @@ import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
@@ -41,7 +33,6 @@ import de.shop.R;
 import de.shop.data.AbstractKunde;
 import de.shop.data.FamilienstandType;
 import de.shop.data.GeschlechtType;
-import de.shop.data.HobbyType;
 import de.shop.data.Privatkunde;
 import de.shop.service.HttpResponse;
 import de.shop.service.KundeService.KundeServiceBinder;
@@ -59,7 +50,6 @@ public class KundeEdit extends Fragment {
 	private EditText edtOrt;
 	private EditText edtStrasse;
 	private EditText edtHausnr;
-	private DatePicker dpSeit;
 	private NumberPicker npKategorie;
 	private ToggleButton tglNewsletter;
 	private RadioButton rbMaennlich;

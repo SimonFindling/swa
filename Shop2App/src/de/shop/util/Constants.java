@@ -19,6 +19,8 @@ public final class Constants {
 	public static final String NACHNAME_PREFIX_PATH = KUNDEN_PREFIX_PATH + "/nachname";
 	public static final String BESTELLUNGEN_PATH = "/bestellungen";
 	public static final String ARTIKEL_PATH = "/artikel";
+	public static final String BEZEICHNUNG_PATH = ARTIKEL_PATH + "?bezeichnung=";
+
 	
 	public static final short MIN_KATEGORIE = 1;
 	public static final short MAX_KATEGORIE = 9;

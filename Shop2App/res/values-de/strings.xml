@@ -48,5 +48,7 @@
     <string name="s_mobile">Mobile Netzwerkverbindung</string>
     <string name="s_not_connected">Keine Netzwerkverbindung</string>
     <string name="s_mock">ACHTUNG: Testmodus im Offline-Betrieb</string>
+    <string name="s_artikel_suche_bezeichnung">Suche mit Bezeichnung</string>
+    <string name="s_artikel_create">Artikel anlegen</string>
     
 </resources>

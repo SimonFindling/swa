@@ -9,4 +9,14 @@
 	<string name="a_stammdaten">Master data</string>
 	<string name="a_preis">Price</string>
 	<string name="a_verfuegbar">Avaibility</string>
+	<string name="a_bezeichnung_auswahl_hint">Choose a label</string>
+	<string name="a_bezeichnung_hint">Enter label</string>
+	<string name="a_bezeichnung_fehlt">Label is missing.</string>
+	<string name="a_artikel_liste_title">Items</string>
+	<string name="a_hint_artikelname">Item-name</string>
+	
+	
+	
+	
+	
 </resources>
